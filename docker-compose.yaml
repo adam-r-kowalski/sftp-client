@@ -1,0 +1,22 @@
+version: '3'
+services:
+    server:
+        image: gotechnies/alpine-ssh
+        networks:
+            - default
+
+    client:
+        image: adamkowalski/rust-cmake
+        networks:
+            - default
+        stdin_open: true
+        tty: true
+        volumes:
+            - ./client/:/client
+            - ./.emacs.d/:/root/.emacs.d/
+        working_dir: /client
+        command: bash
+
+
+networks:
+    default:

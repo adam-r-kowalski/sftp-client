@@ -1,8 +1,9 @@
 use std::{fmt, io};
+use std::io::Write;
 
 pub struct MenuItem<Context> {
     title: String,
-    callback: Box<Fn(&Context)>
+    callback: fn(&Context)
 }
 
 impl<Context> fmt::Display for MenuItem<Context> {
@@ -12,15 +13,31 @@ impl<Context> fmt::Display for MenuItem<Context> {
 }
 
 impl<Context> MenuItem<Context> {
-    pub fn new(title: &str, callback: Box<Fn(&Context) -> ()>) -> MenuItem<Context> {
+    pub fn new(title: &str, callback: fn(&Context)) -> MenuItem<Context> {
         MenuItem {
             title: String::from(title),
             callback
         }
     }
+}
 
-    pub fn call(&self, context: &Context) {
-        (self.callback)(&context)
+impl<'a, Context> Fn<(&'a Context,)> for MenuItem<Context> {
+    extern "rust-call" fn call(&self, args: (&'a Context,)) {
+        (self.callback)(args.0)
+    }
+}
+
+impl<'a, Context> FnMut<(&'a Context,)> for MenuItem<Context> {
+    extern "rust-call" fn call_mut(&mut self, args: (&'a Context,)) {
+        self.call(args)
+    }
+}
+
+impl<'a, Context> FnOnce<(&'a Context,)> for MenuItem<Context> {
+    type Output = ();
+
+    extern "rust-call" fn call_once(self, args: (&'a Context,)) {
+        self.call(args)
     }
 }
 
@@ -39,16 +56,35 @@ impl<Context> Menu<Context> {
         }
     }
 
-    pub fn push(&mut self, menu_item: MenuItem<Context>) {
+    pub fn insert(&mut self, menu_item: MenuItem<Context>) {
         self.menu_items.push(menu_item)
     }
+}
 
-    pub fn get_input(&self) {
+impl<Context> Fn<()> for Menu<Context> {
+    extern "rust-call" fn call(&self, _: ()) {
+        print!("{}", self);
+        print!("Enter your choice: ");
+        io::stdout().flush().unwrap();
         let mut input_text = String::new();
         io::stdin().read_line(&mut input_text).unwrap();
         let trimmed = input_text.trim();
         let index = trimmed.parse::<usize>().unwrap();
-        self.menu_items[index].call(&self.context);
+        self.menu_items[index](&self.context);
+    }
+}
+
+impl<Context> FnMut<()> for Menu<Context> {
+    extern "rust-call" fn call_mut(&mut self, args: ()) {
+        self.call(args)
+    }
+}
+
+impl<Context> FnOnce<()> for Menu<Context> {
+    type Output = ();
+
+    extern "rust-call" fn call_once(self, args: ()) {
+        self.call(args)
     }
 }
 

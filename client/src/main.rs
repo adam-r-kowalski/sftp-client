@@ -1,9 +1,10 @@
-extern crate client;
 extern crate ssh2;
+extern crate client;
 
-use ssh2::Session;
+use client::menu::{Menu, MenuItem};
+
 use std::net::TcpStream;
-use std::path::Path;
+use ssh2::Session;
 
 fn main() {
     let tcp = TcpStream::connect("server:22").unwrap();
@@ -13,12 +14,16 @@ fn main() {
 
     let sftp = session.sftp().unwrap();
 
-    // sftp.mkdir(Path::new("/demo"), 0).unwrap();
+    let mut menu = Menu::new("SFTP Client", sftp);
 
-    // sftp.rmdir(Path::new("/demo")).unwrap();
+    menu.push(MenuItem::new(
+        "Create Directory On Remote Server",
+        Box::new(|_| println!("hello"))));
 
-    sftp.readdir(Path::new("/"))
-        .unwrap()
-        .into_iter()
-        .for_each(|(path, _)| println!("{:?}", path));
+    menu.push(MenuItem::new(
+        "Delete Directory on Remote Server",
+        Box::new(|_| println!("hello"))));
+
+    print!("{}", menu);
+    menu.get_input();
 }

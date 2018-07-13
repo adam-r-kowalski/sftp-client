@@ -1,5 +1,7 @@
 extern crate ssh2;
 
+pub mod menu;
+
 use ssh2::Session;
 use std::net::TcpStream;
 use std::path::Path;

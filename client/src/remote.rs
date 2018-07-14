@@ -1,7 +1,9 @@
-use ssh2::Sftp;
+use ssh2::Session;
 use std::path::PathBuf;
 use std::io;
 use std::io::Write;
+
+use connection::Connection;
 
 fn get_string(prompt: &str) -> String {
     print!("{}", prompt);
@@ -17,23 +19,23 @@ fn get_path_buf() -> PathBuf {
     path
 }
 
-pub fn create_directory(sftp: &Sftp) {
-    sftp.mkdir(get_path_buf().as_path(), 0).unwrap()
-}
-
-pub fn delete_directory(sftp: &Sftp) {
-    sftp.rmdir(get_path_buf().as_path()).unwrap()
-}
-
-pub fn list_directories(sftp: &Sftp) {
-    sftp.readdir(get_path_buf().as_path())
+pub fn list_directories(connection: &Connection) {
+    connection.sftp().readdir(get_path_buf().as_path())
         .unwrap()
         .into_iter()
         .for_each(|d| println!("{:?}", d.0));
 }
 
-pub fn rename_file(sftp: &Sftp) {
+pub fn create_directory(connection: &Connection) {
+    connection.sftp().mkdir(get_path_buf().as_path(), 0).unwrap()
+}
+
+pub fn delete_directory(connection: &Connection) {
+    connection.sftp().rmdir(get_path_buf().as_path()).unwrap()
+}
+
+pub fn rename_file(connection: &Connection) {
     let source = get_path_buf();
     let destination = get_path_buf();
-    sftp.rename(&source, &destination, None).unwrap();
+    connection.sftp().rename(&source, &destination, None).unwrap();
 }

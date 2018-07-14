@@ -1,5 +1,6 @@
-use std::{fmt, io};
-use std::io::Write;
+use std::fmt;
+
+use input;
 
 pub struct MenuItem<Context> {
     title: String,
@@ -64,12 +65,7 @@ impl<Context> Menu<Context> {
 impl<Context> Fn<()> for Menu<Context> {
     extern "rust-call" fn call(&self, _: ()) {
         print!("{}", self);
-        print!("Enter your choice: ");
-        io::stdout().flush().unwrap();
-        let mut input_text = String::new();
-        io::stdin().read_line(&mut input_text).unwrap();
-        let trimmed = input_text.trim();
-        let index = trimmed.parse::<usize>().unwrap();
+        let index = input::positive("Enter choice: ");
         self.menu_items[index](&self.context);
     }
 }

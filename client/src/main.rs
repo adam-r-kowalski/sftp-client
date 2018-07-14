@@ -1,11 +1,11 @@
-extern crate ssh2;
 extern crate client;
+extern crate ssh2;
 
 use client::menu::{Menu, MenuItem};
 use client::remote;
 
-use std::net::TcpStream;
 use ssh2::Session;
+use std::net::TcpStream;
 
 fn main() {
     let tcp = TcpStream::connect("server:22").unwrap();
@@ -19,15 +19,30 @@ fn main() {
 
     menu.insert(MenuItem::new(
         "Create directory on remote server",
-        remote::create_directory));
+        remote::create_directory,
+    ));
 
     menu.insert(MenuItem::new(
         "Delete directory on remote server",
-        remote::delete_directory));
+        remote::delete_directory,
+    ));
 
     menu.insert(MenuItem::new(
         "List directories on remote server",
-        remote::list_directories));
+        remote::list_directories,
+    ));
 
-    menu();
+    menu.insert(MenuItem::new(
+        "Rename file or direcory on remote server",
+        remote::rename_file,
+    ));
+
+    menu.insert(MenuItem::new(
+        "Log off remote server",
+        |_| std::process::exit(0)
+    ));
+
+    loop {
+        menu();
+    }
 }

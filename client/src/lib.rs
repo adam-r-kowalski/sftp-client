@@ -11,17 +11,17 @@ use std::path::Path;
 
 #[cfg(test)]
 mod tests {
-  use super::*;
+    use super::*;
 
-  #[test]
-  fn log_into_remote_ftp_server() {
-    let tcp = TcpStream::connect("server:22").unwrap();
-    let mut session = Session::new().unwrap();
-    session.handshake(&tcp).unwrap();
-    session.userauth_password("root", "root").unwrap();
-  }
+    #[test]
+    fn log_into_remote_ftp_server() {
+        let tcp = TcpStream::connect("server:22").unwrap();
+        let mut session = Session::new().unwrap();
+        session.handshake(&tcp).unwrap();
+        session.userauth_password("root", "root").unwrap();
+    }
 
-  #[test]
+    #[test]
     fn create_directory_on_remote_server() {
         let tcp = TcpStream::connect("server:22").unwrap();
         let mut session = Session::new().unwrap();

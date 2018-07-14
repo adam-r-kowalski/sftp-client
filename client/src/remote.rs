@@ -29,3 +29,9 @@ pub fn list_directories(sftp: &Sftp) {
         .into_iter()
         .for_each(|d| println!("{:?}", d.0));
 }
+
+pub fn rename_file(sftp: &Sftp) {
+    let source = get_path_buf();
+    let destination = get_path_buf();
+    sftp.rename(&source, &destination, None).unwrap();
+}

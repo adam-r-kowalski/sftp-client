@@ -46,6 +46,10 @@ You will now be greeted by a prompt saying
 
 This means you are inside the docker container!
 
+`exit` will take you out of the container
+
+Then type `docker-compose down` in the project directory to shut down all containers
+
 ## Running the code
 
 `cargo run`

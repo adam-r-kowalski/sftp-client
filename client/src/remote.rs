@@ -3,15 +3,17 @@ use std::path::PathBuf;
 use std::io;
 use std::io::Write;
 
-fn get_path_buf() -> PathBuf {
-    print!("\nEnter path: ");
+fn get_string(prompt: &str) -> String {
+    print!("{}", prompt);
     io::stdout().flush().unwrap();
-
     let mut input_text = String::new();
     io::stdin().read_line(&mut input_text).unwrap();
-    let trimmed = input_text.trim();
+    String::from(input_text.trim())
+}
+
+fn get_path_buf() -> PathBuf {
     let mut path = PathBuf::new();
-    path.push(trimmed);
+    path.push(get_string("\nEnter path:"));
     path
 }
 

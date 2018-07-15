@@ -67,3 +67,6 @@ Beyond that you can use any editor you like. Here are some recommendations
 - [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust)
 - [IntelliJ](https://intellij-rust.github.io/)
 
+## Code documentation
+
+The documentation is automatically generated from the source and is available [here](https://adam-r-kowalski.github.io/sftp-client/)

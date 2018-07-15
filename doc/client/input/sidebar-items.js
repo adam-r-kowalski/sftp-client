@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["path",""],["positive",""],["prompt_path",""],["string",""]]});

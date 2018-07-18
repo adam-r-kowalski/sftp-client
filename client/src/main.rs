@@ -15,15 +15,15 @@ fn main() {
         remote::list_directories));
 
     menu.insert(MenuItem::new(
-        "Create remote directoryr",
+        "Create remote directory",
         remote::create_directory));
 
     menu.insert(MenuItem::new(
-        "Delete remote directoryr",
+        "Delete remote directory",
         remote::delete_directory));
 
     menu.insert(MenuItem::new(
-        "Rename remote file or direcoryr",
+        "Rename remote file or directory",
         remote::rename_file));
 
     menu.insert(MenuItem::new(

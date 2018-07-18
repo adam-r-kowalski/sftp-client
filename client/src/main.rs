@@ -2,7 +2,7 @@ extern crate client;
 extern crate ssh2;
 
 use client::menu::{Menu, MenuItem};
-use client::remote;
+use client::{local, remote};
 use client::connection::Connection;
 
 fn main() {
@@ -27,9 +27,12 @@ fn main() {
         remote::rename_file));
 
     menu.insert(MenuItem::new(
+	"List local directories",
+	local::list_directories));
+
+    menu.insert(MenuItem::new(
         "Log off",
         |_| std::process::exit(0)));
-
     loop {
         menu();
         println!("");

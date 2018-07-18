@@ -6,3 +6,4 @@ pub mod menu;
 pub mod remote;
 pub mod connection;
 pub mod input;
+pub mod local;

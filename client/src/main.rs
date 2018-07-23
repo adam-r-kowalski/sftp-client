@@ -27,8 +27,12 @@ fn main() {
         remote::rename_file));
 
     menu.insert(MenuItem::new(
-	"List local directories",
-	local::list_directories));
+		"List local directories",
+		local::list_directories));
+	
+	menu.insert(MenuItem::new(
+		"Download remote file",
+		remote::download_file));
 
     menu.insert(MenuItem::new(
         "Log off",

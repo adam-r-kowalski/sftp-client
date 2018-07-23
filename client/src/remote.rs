@@ -21,3 +21,11 @@ pub fn rename_file(connection: &Connection) {
     let destination = &input::prompt_path("\nEnter destination: ");
     connection.sftp().rename(source, destination, None).unwrap();
 }
+
+pub fn download_file(connection: &Connection){
+	let target = &input::prompt_path("\nWhich file would you like to download?: ");
+	let (mut remote_file,stat) = connection.sftp().scp_recv(target).unwrap;
+	let mut contents = Vec::new();
+	remote_file.read_to_end(&mut contents).unwrap();
+	fs::write("download.txt",contents).unwrap;	
+}

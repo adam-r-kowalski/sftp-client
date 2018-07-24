@@ -1,5 +1,6 @@
 use connection::Connection;
 use input;
+use std::io::Read;
 
 pub fn list_directories(connection: &Connection) {
     connection.sftp().readdir(&input::path())
@@ -24,8 +25,8 @@ pub fn rename_file(connection: &Connection) {
 
 pub fn download_file(connection: &Connection){
 	let target = &input::prompt_path("\nWhich file would you like to download?: ");
-	let (mut remote_file,stat) = connection.sftp().scp_recv(target).unwrap;
+	let (mut remote_file,stat) = connection.session.scp_recv(target).unwrap();
 	let mut contents = Vec::new();
 	remote_file.read_to_end(&mut contents).unwrap();
-	fs::write("download.txt",contents).unwrap;	
+	std::fs::write("download.txt",contents).unwrap();	
 }

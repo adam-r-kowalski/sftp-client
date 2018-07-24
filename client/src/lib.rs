@@ -1,4 +1,4 @@
-#![feature(unboxed_closures, fn_traits,extern prelude)]
+#![feature(unboxed_closures, fn_traits,extern_prelude)]
 
 extern crate ssh2;
 

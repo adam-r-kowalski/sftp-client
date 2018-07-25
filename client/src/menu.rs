@@ -4,7 +4,7 @@ use input;
 
 pub struct MenuItem<Context> {
     title: String,
-    callback: fn(&Context)
+    callback: fn(&Context) -> String,
 }
 
 impl<Context> fmt::Display for MenuItem<Context> {
@@ -14,30 +14,30 @@ impl<Context> fmt::Display for MenuItem<Context> {
 }
 
 impl<Context> MenuItem<Context> {
-    pub fn new(title: &str, callback: fn(&Context)) -> MenuItem<Context> {
+    pub fn new(title: &str, callback: fn(&Context) -> String) -> MenuItem<Context> {
         MenuItem {
             title: String::from(title),
-            callback
+            callback,
         }
     }
 }
 
 impl<'a, Context> Fn<(&'a Context,)> for MenuItem<Context> {
-    extern "rust-call" fn call(&self, args: (&'a Context,)) {
+    extern "rust-call" fn call(&self, args: (&'a Context,)) -> Self::Output {
         (self.callback)(args.0)
     }
 }
 
 impl<'a, Context> FnMut<(&'a Context,)> for MenuItem<Context> {
-    extern "rust-call" fn call_mut(&mut self, args: (&'a Context,)) {
+    extern "rust-call" fn call_mut(&mut self, args: (&'a Context,)) -> Self::Output {
         self.call(args)
     }
 }
 
 impl<'a, Context> FnOnce<(&'a Context,)> for MenuItem<Context> {
-    type Output = ();
+    type Output = String;
 
-    extern "rust-call" fn call_once(self, args: (&'a Context,)) {
+    extern "rust-call" fn call_once(self, args: (&'a Context,)) -> Self::Output {
         self.call(args)
     }
 }
@@ -53,7 +53,7 @@ impl<Context> Menu<Context> {
         Menu {
             context,
             name: String::from(name),
-            menu_items: vec![]
+            menu_items: vec![],
         }
     }
 

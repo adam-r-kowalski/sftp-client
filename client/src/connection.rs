@@ -1,5 +1,5 @@
-use std::net::TcpStream;
 use ssh2::{Session, Sftp};
+use std::net::TcpStream;
 
 pub struct Connection {
     pub tcp: TcpStream,
@@ -13,10 +13,7 @@ impl Connection {
         session.handshake(&tcp).unwrap();
         session.userauth_password(username, password).unwrap();
 
-        Connection {
-            tcp,
-            session
-        }
+        Connection { tcp, session }
     }
 
     pub fn to_container() -> Connection {

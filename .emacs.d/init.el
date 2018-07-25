@@ -179,7 +179,8 @@
 
 (use-package rust-mode
   :defer t
-  :init (setq rust-format-on-save t))
+  :init
+  (setq rust-format-on-save t))
 
 (use-package flycheck-rust
   :defer t

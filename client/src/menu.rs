@@ -1,6 +1,8 @@
 use std::fmt;
+use std::marker::PhantomData;
 
 use input;
+use logger;
 
 pub struct MenuItem<Context> {
     title: String,
@@ -42,18 +44,20 @@ impl<'a, Context> FnOnce<(&'a Context,)> for MenuItem<Context> {
     }
 }
 
-pub struct Menu<Context> {
+pub struct Menu<Logger: logger::Logger, Context> {
     context: Context,
     name: String,
     menu_items: Vec<MenuItem<Context>>,
+    logger: PhantomData<Logger>,
 }
 
-impl<Context> Menu<Context> {
-    pub fn new(name: &str, context: Context) -> Menu<Context> {
+impl<Logger: logger::Logger, Context> Menu<Logger, Context> {
+    pub fn new(name: &str, context: Context) -> Menu<Logger, Context> {
         Menu {
             context,
             name: String::from(name),
             menu_items: vec![],
+            logger: PhantomData,
         }
     }
 
@@ -62,21 +66,21 @@ impl<Context> Menu<Context> {
     }
 }
 
-impl<Context> Fn<()> for Menu<Context> {
+impl<Logger: logger::Logger, Context> Fn<()> for Menu<Logger, Context> {
     extern "rust-call" fn call(&self, _: ()) {
         print!("{}", self);
         let index = input::positive("Enter choice: ");
-        self.menu_items[index](&self.context);
+        Logger::log(&self.menu_items[index](&self.context));
     }
 }
 
-impl<Context> FnMut<()> for Menu<Context> {
+impl<Logger: logger::Logger, Context> FnMut<()> for Menu<Logger, Context> {
     extern "rust-call" fn call_mut(&mut self, args: ()) {
         self.call(args)
     }
 }
 
-impl<Context> FnOnce<()> for Menu<Context> {
+impl<Logger: logger::Logger, Context> FnOnce<()> for Menu<Logger, Context> {
     type Output = ();
 
     extern "rust-call" fn call_once(self, args: ()) {
@@ -84,7 +88,7 @@ impl<Context> FnOnce<()> for Menu<Context> {
     }
 }
 
-impl<Context> fmt::Display for Menu<Context> {
+impl<Logger: logger::Logger, Context> fmt::Display for Menu<Logger, Context> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let result = writeln!(f, "--- {} ---", self.name);
 

@@ -2,13 +2,14 @@ extern crate client;
 extern crate ssh2;
 
 use client::connection::Connection;
+use client::logger::ConsoleLogger;
 use client::menu::{Menu, MenuItem};
 use client::{local, remote};
 
 fn main() {
     let connection = Connection::to_container();
 
-    let mut menu = Menu::new("SFTP Client", connection);
+    let mut menu = Menu::<ConsoleLogger, Connection>::new("SFTP Client", connection);
 
     menu.insert(MenuItem::new(
         "List remote directories",
@@ -40,6 +41,7 @@ fn main() {
     menu.insert(MenuItem::new("Create remote file", remote::create_file));
 
     menu.insert(MenuItem::new("Log off", |_| std::process::exit(0)));
+
     loop {
         menu();
         println!("");

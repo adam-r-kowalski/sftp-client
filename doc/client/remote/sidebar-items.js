@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["create_directory",""],["delete_directory",""],["list_directories",""],["rename_file",""]]});
+initSidebarItems({"fn":[["create_directory",""],["create_file",""],["delete_directory",""],["delete_file",""],["list_directories",""],["rename_file",""]]});

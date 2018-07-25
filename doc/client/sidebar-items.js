@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["connection",""],["input",""],["menu",""],["remote",""]]});
+initSidebarItems({"mod":[["connection",""],["input",""],["local",""],["logger",""],["menu",""],["remote",""]]});

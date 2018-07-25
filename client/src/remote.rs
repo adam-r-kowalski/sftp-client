@@ -2,7 +2,9 @@ use connection::Connection;
 use input;
 
 pub fn list_directories(connection: &Connection) {
-    connection.sftp().readdir(&input::path())
+    connection
+        .sftp()
+        .readdir(&input::path())
         .unwrap()
         .into_iter()
         .for_each(|d| println!("{:?}", d.0));
@@ -20,4 +22,13 @@ pub fn rename_file(connection: &Connection) {
     let source = &input::prompt_path("\nEnter source: ");
     let destination = &input::prompt_path("\nEnter destination: ");
     connection.sftp().rename(source, destination, None).unwrap();
+}
+
+pub fn delete_file(connection: &Connection) {
+    connection.sftp().unlink(&input::path()).unwrap()
+}
+
+pub fn create_file(connection: &Connection) {
+    let sftp = connection.sftp();
+    sftp.create(&input::path()).unwrap();
 }

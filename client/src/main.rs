@@ -1,5 +1,4 @@
 extern crate client;
-extern crate ssh2;
 
 use client::connection::Connection;
 use client::logger::ConsoleLogger;

@@ -1,5 +1,6 @@
 use std::io::{self, Write};
 use std::path::PathBuf;
+use rpassword;
 
 pub fn string(prompt: &str) -> String {
     print!("{}", prompt);
@@ -21,4 +22,8 @@ pub fn path() -> PathBuf {
 
 pub fn positive(prompt: &str) -> usize {
     string(prompt).parse::<usize>().unwrap()
+}
+
+pub fn password() -> String {
+    rpassword::prompt_password_stdout("Enter password: ").unwrap()
 }

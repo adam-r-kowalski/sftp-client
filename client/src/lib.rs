@@ -1,6 +1,7 @@
 #![feature(unboxed_closures, fn_traits)]
 
 extern crate ssh2;
+extern crate rpassword;
 
 pub mod connection;
 pub mod input;

@@ -1,6 +1,8 @@
 use ssh2::{Session, Sftp};
 use std::net::TcpStream;
 
+use input;
+
 pub struct Connection {
     pub tcp: TcpStream,
     pub session: Session,
@@ -18,6 +20,13 @@ impl Connection {
 
     pub fn to_container() -> Connection {
         Connection::new("server:22", "root", "root")
+    }
+
+    pub fn from_prompt() -> Connection {
+        let host = input::string("Enter host: ");
+        let username = input::string("Enter username: ");
+        let password = input::password();
+        Connection::new(&host, &username, &password)
     }
 
     pub fn sftp(&self) -> Sftp {

@@ -38,7 +38,11 @@ fn main() {
 	
 	menu.insert(MenuItem::new(
 		"Download remote file",
-		remote::download_file));	
+		remote::download_file));
+
+	menu.insert(MenuItem::new(
+		"Download multiple remote file",
+		remote::download_file_multi));
 
     menu.insert(MenuItem::new("Delete remote file", remote::delete_file));
 

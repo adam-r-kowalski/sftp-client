@@ -47,9 +47,26 @@ pub fn create_file(connection: &Connection) -> String {
 
 pub fn download_file(connection: &Connection) -> String {
 	let target = &input::prompt_path("\nWhich file would you like to download?: ");
-	let (mut remote_file,stat) = connection.session.scp_recv(target).unwrap();
+	let (mut remote_file,_stat) = connection.session.scp_recv(target).unwrap();
 	let mut contents = Vec::new();
 	remote_file.read_to_end(&mut contents).unwrap();
 	std::fs::write(target,contents).unwrap();
 	format!("User downloaded a remote file {:?}", target)	
+}
+
+pub fn download_file_multi(connection: &Connection) -> String {
+	let mut done = false;
+	
+	while !done {	
+		let target = &input::prompt_path("\nWhich file would you like to download?: ");
+		let (mut remote_file,_stat) = connection.session.scp_recv(target).unwrap();
+		let mut contents = Vec::new();
+		remote_file.read_to_end(&mut contents).unwrap();
+		std::fs::write(target,contents).unwrap();
+		let response = &input::string("\nContinue?(yes or no)");
+		if response == "no" {
+			done = true;
+			}
+		}	
+	format!("User downloaded multiple files")	
 }

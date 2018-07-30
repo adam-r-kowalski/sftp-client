@@ -1,5 +1,6 @@
 use connection::Connection;
 use input;
+use std::io::Read;
 
 pub fn list_directories(connection: &Connection) -> String {
     let path = input::path();
@@ -42,4 +43,13 @@ pub fn create_file(connection: &Connection) -> String {
     let path = input::path();
     sftp.create(&path).unwrap();
     format!("User created remote file {:?}", path)
+}
+
+pub fn download_file(connection: &Connection) -> String {
+	let target = &input::prompt_path("\nWhich file would you like to download?: ");
+	let (mut remote_file,stat) = connection.session.scp_recv(target).unwrap();
+	let mut contents = Vec::new();
+	remote_file.read_to_end(&mut contents).unwrap();
+	std::fs::write(target,contents).unwrap();
+	format!("User downloaded a remote file {:?}", target)	
 }

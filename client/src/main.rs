@@ -35,6 +35,10 @@ fn main() {
         "List local directories",
         local::list_directories,
     ));
+	
+	menu.insert(MenuItem::new(
+		"Download remote file",
+		remote::download_file));	
 
     menu.insert(MenuItem::new("Delete remote file", remote::delete_file));
 

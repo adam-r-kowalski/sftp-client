@@ -1,7 +1,10 @@
 use ssh2::{Session, Sftp};
 use std::net::TcpStream;
-
+use std::fs::OpenOptions;
+//use std::fs::File;
 use input;
+use std::io::Write;
+use std::io::Read;
 
 pub struct Connection {
     pub tcp: TcpStream,
@@ -15,8 +18,21 @@ impl Connection {
         session.handshake(&tcp).unwrap();
         session.userauth_password(username, password).unwrap();
 
-        Connection { tcp, session }
+         let mut log = OpenOptions::new()                                                                                
+            .read(true)                                                                                                        
+            .append(true)                                                                                                      
+            .create(true)                                                                                                      
+            .open("connection.txt")
+            .unwrap();
+
+        if let Err(e) = writeln!(log, "Hostname: {}  Username: {}", host, username) {
+            eprintln!("Couldn't write to log: {}", e);
+        }
+
+        Connection {tcp, session}
     }
+
+        
 
     pub fn to_container() -> Connection {
         Connection::new("server:22", "root", "root")
@@ -32,8 +48,21 @@ impl Connection {
     pub fn sftp(&self) -> Sftp {
         self.session.sftp().unwrap()
     }
-}
 
+    pub fn read_log(&self) {
+        let mut log = OpenOptions::new()
+            .read(true)
+            .open("connection.txt")
+            .unwrap();
+
+        let mut info = String::new();
+        log.read_to_string(&mut info)
+            .expect("something broke");
+
+        println!("{}", info);
+
+    }
+ }
 #[cfg(test)]
 mod tests {
     use super::*;

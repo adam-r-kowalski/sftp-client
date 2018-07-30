@@ -7,7 +7,8 @@ use client::{local, remote};
 
 fn main() {
     let connection = Connection::to_container();
-
+    connection.read_log();
+    
     let mut menu = Menu::<ConsoleLogger, Connection>::new("SFTP Client", connection);
 
     menu.insert(MenuItem::new(

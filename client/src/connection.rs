@@ -4,6 +4,8 @@ use std::fs::OpenOptions;
 //use std::fs::File;
 use input;
 use std::io::Write;
+use std::io::Read;
+
 pub struct Connection {
     pub tcp: TcpStream,
     pub session: Session,
@@ -47,6 +49,19 @@ impl Connection {
         self.session.sftp().unwrap()
     }
 
+    pub fn read_log(&self) {
+        let mut log = OpenOptions::new()
+            .read(true)
+            .open("connection.txt")
+            .unwrap();
+
+        let mut info = String::new();
+        log.read_to_string(&mut info)
+            .expect("something broke");
+
+        println!("{}", info);
+
+    }
  }
 #[cfg(test)]
 mod tests {

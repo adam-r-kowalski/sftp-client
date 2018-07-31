@@ -5,4 +5,5 @@ ALIASES['libc'] = {};
 ALIASES['libssh2_sys'] = {};
 ALIASES['libz_sys'] = {};
 ALIASES['openssl_sys'] = {};
+ALIASES['rpassword'] = {};
 ALIASES['ssh2'] = {};

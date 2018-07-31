@@ -8,7 +8,7 @@ use client::{local, remote};
 fn main() {
     let connection = Connection::to_container();
     connection.read_log();
-    
+
     let mut menu = Menu::<ConsoleLogger, Connection>::new("SFTP Client", connection);
 
     menu.insert(MenuItem::new(
@@ -30,12 +30,17 @@ fn main() {
         "Rename remote file or directory",
         remote::rename_file,
     ));
- 
+
     menu.insert(MenuItem::new(
         "Put file onto remote server",
         remote::put_file,
     ));
- 
+
+    menu.insert(MenuItem::new(
+        "Put multiple files onto remote server",
+        remote::put_file_multi,
+    ));
+
     menu.insert(MenuItem::new(
         "List local directories",
         local::list_directories,
@@ -50,18 +55,19 @@ fn main() {
         "Change permissions on local directory",
         local::change_permission,
     ));
-	
-	menu.insert(MenuItem::new(
-		"Download remote file",
-		remote::download_file));
 
-	menu.insert(MenuItem::new(
-		"Download multiple remote file",
-		remote::download_file_multi));
+    menu.insert(MenuItem::new("Download remote file", remote::download_file));
+
+    menu.insert(MenuItem::new(
+        "Download multiple remote file",
+        remote::download_file_multi,
+    ));
 
     menu.insert(MenuItem::new("Delete remote file", remote::delete_file));
 
     menu.insert(MenuItem::new("Create remote file", remote::create_file));
+
+    menu.insert(MenuItem::new("Delete remote file", remote::delete_file));
 
     menu.insert(MenuItem::new("Log off", |_| std::process::exit(0)));
 

@@ -35,6 +35,11 @@ fn main() {
         "List local directories",
         local::list_directories,
     ));
+
+    menu.insert(MenuItem::new(
+        "Rename file on local machine",
+        local::rename_file,
+    ));
 	
 	menu.insert(MenuItem::new(
 		"Download remote file",

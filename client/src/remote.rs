@@ -2,9 +2,7 @@ use connection::Connection;
 use input;
 use std::io::Read;
 use std::io::Write;
-use std::fs;
 use std::fs::File;
-use std::net::SocketAddr;
 use std::path::Path;
 
 pub fn list_directories(connection: &Connection) -> String {

@@ -45,6 +45,11 @@ fn main() {
         "Rename file on local machine",
         local::rename_file,
     ));
+
+    menu.insert(MenuItem::new(
+        "Change permissions on local directory",
+        local::change_permission,
+    ));
 	
 	menu.insert(MenuItem::new(
 		"Download remote file",

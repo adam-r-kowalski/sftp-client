@@ -1,6 +1,11 @@
 use connection::Connection;
 use input;
 use std::io::Read;
+use std::io::Write;
+use std::fs;
+use std::fs::File;
+use std::net::SocketAddr;
+use std::path::Path;
 
 pub fn list_directories(connection: &Connection) -> String {
     let path = input::path();
@@ -44,6 +49,21 @@ pub fn create_file(connection: &Connection) -> String {
     sftp.create(&path).unwrap();
     format!("User created remote file {:?}", path)
 }
+
+pub fn put_file(connection: &Connection) -> String {
+    let source = input::prompt_path("\nLocal path to upload: ");
+    let dest = input::prompt_path("\nRemote destination path: ");
+    //let f: SocketAddr = String::from_utf8_lossy(&fs::read(source).unwrap()).parse().unwrap();
+    let mut f = File::open(source).unwrap();
+    let mut contents = Vec::new();
+
+    f.read_to_end(&mut contents).unwrap();
+    let mut remote_file = connection.session.scp_send(Path::new(&dest),
+                 0o644, contents.len() as u64, None).unwrap();
+    remote_file.write(&contents).unwrap(); 
+
+    format!("User uploaded a file to remote server: {:?}", dest)
+}   
 
 pub fn download_file(connection: &Connection) -> String {
 	let target = &input::prompt_path("\nWhich file would you like to download?: ");

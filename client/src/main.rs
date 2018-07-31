@@ -30,7 +30,12 @@ fn main() {
         "Rename remote file or directory",
         remote::rename_file,
     ));
-
+ 
+    menu.insert(MenuItem::new(
+        "Put file onto remote server",
+        remote::put_file,
+    ));
+ 
     menu.insert(MenuItem::new(
         "List local directories",
         local::list_directories,

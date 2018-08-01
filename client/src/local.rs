@@ -27,7 +27,7 @@ pub fn change_permission(_: &Connection) -> String {
         Ok(file)  => { let mut perms = file.metadata().unwrap().permissions();
                        perms.set_readonly(true);
                        file.set_permissions(perms).unwrap();
-                       format!("Changed permisssions for local file {:?} ", path)
+                       format!("Changed permission for local file {:?} ", path)
                      },
         Err(e)    => e.to_string(),
     }

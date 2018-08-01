@@ -51,7 +51,6 @@ pub fn delete_file(connection: &Connection) -> String {
 pub fn put_file(connection: &Connection) -> String {
     let source = input::prompt_path("\nLocal path to upload: ");
     let dest = input::prompt_path("\nRemote destination path: ");
-    //let f: SocketAddr = String::from_utf8_lossy(&fs::read(source).unwrap()).parse().unwrap();
     let mut f = File::open(source).unwrap();
     let mut contents = Vec::new();
 
@@ -114,4 +113,15 @@ pub fn download_file_multi(connection: &Connection) -> String {
         }
     }
     format!("User downloaded multiple files")
+}
+
+pub fn change_permission(connection: &Connection) -> String {
+    let path = input::path();
+    let permissions = input::string("\nEnter new file permissions: ");
+    connection.remote_execute(&format!("chmod {} {}", permissions, path.to_str().unwrap()));
+    format!("Changed permissions for remote file {:?} to {}", path, permissions)
+}
+
+pub fn execute(connection: &Connection) -> String {
+    connection.remote_execute(&input::string("\nEnter command: "))
 }

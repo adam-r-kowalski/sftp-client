@@ -67,7 +67,14 @@ fn main() {
 
     menu.insert(MenuItem::new("Delete remote file", remote::delete_file));
 
+    menu.insert(MenuItem::new(
+        "Change permissions on remote directory",
+        remote::change_permission,
+    ));
+
     menu.insert(MenuItem::new("Log off", |_| std::process::exit(0)));
+
+    menu.insert(MenuItem::new("Remote Execute", remote::execute));
 
     loop {
         menu();

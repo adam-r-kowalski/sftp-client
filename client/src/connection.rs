@@ -31,9 +31,7 @@ impl Connection {
 
         Connection {tcp, session}
     }
-
         
-
     pub fn to_container() -> Connection {
         Connection::new("server:22", "root", "root")
     }
@@ -47,6 +45,18 @@ impl Connection {
 
     pub fn sftp(&self) -> Sftp {
         self.session.sftp().unwrap()
+    }
+
+    pub fn remote_execute(&self, command: &str) -> String {
+        let mut channel = self.session.channel_session().unwrap();
+        channel.exec(command).unwrap();
+        let mut s = String::new();
+        channel.read_to_string(&mut s).unwrap();
+
+        println!("remote execute got here {}", s);
+
+        channel.wait_close().unwrap();
+        s
     }
 
     pub fn read_log(&self) {
@@ -63,6 +73,7 @@ impl Connection {
 
     }
  }
+
 #[cfg(test)]
 mod tests {
     use super::*;

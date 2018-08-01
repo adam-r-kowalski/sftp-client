@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["change_permission",""],["list_directories",""],["rename_file",""]]});
+initSidebarItems({"fn":[["change_permission",""],["execute",""],["list_directories",""],["rename_file",""]]});

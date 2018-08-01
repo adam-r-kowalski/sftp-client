@@ -7,110 +7,109 @@ use std::path::Path;
 
 pub fn list_directories(connection: &Connection) -> String {
     let path = input::path();
-    connection
-        .sftp()
-        .readdir(&path)
-        .unwrap()
-        .into_iter()
-        .for_each(|d| println!("{:?}", d.0));
-    format!("User listed remote directories at {:?}", path)
+    match connection.sftp().readdir(&path) {
+        Ok(d) => {
+            d.into_iter().for_each(|d| println!("{:?}", d.0));
+            format!("User listed remote directories at {:?}", path)
+        }
+        Err(e) => e.to_string(),
+    }
 }
 
 pub fn create_directory(connection: &Connection) -> String {
     let path = input::path();
-    connection.sftp().mkdir(&path, 0).unwrap();
-    format!("User created remote directory {:?}", path)
+    match connection.sftp().mkdir(&path, 0) {
+        Ok(_) => format!("User created remote directory {:?}", path),
+        Err(e) => e.to_string(),
+    }
 }
 
 pub fn delete_directory(connection: &Connection) -> String {
     let path = input::path();
-    connection.sftp().rmdir(&path).unwrap();
-    format!("User deleted remote directory {:?}", path)
+    match connection.sftp().rmdir(&path) {
+        Ok(_) => format!("User deleted remote directory {:?}", path),
+        Err(e) => e.to_string(),
+    }
 }
 
 pub fn rename_file(connection: &Connection) -> String {
     let source = &input::prompt_path("\nEnter source: ");
     let destination = &input::prompt_path("\nEnter destination: ");
-    connection.sftp().rename(source, destination, None).unwrap();
-    format!("User renamed remote file {:?} to {:?}", source, destination)
+    match connection.sftp().rename(source, destination, None) {
+        Ok(_) => format!("User renamed remote file {:?} to {:?}", source, destination),
+        Err(e) => e.to_string(),
+    }
 }
 
 pub fn create_file(connection: &Connection) -> String {
     let sftp = connection.sftp();
-    let path = input::path();
-    sftp.create(&path).unwrap();
-    format!("User created remote file {:?}", path)
+    let path = &input::path();
+    let result = sftp.create(path);
+    match result {
+        Ok(_) => format!("User created remote file {:?}", path),
+        Err(e) => e.to_string(),
+    }
 }
 
 pub fn delete_file(connection: &Connection) -> String {
     let path = input::path();
-    connection.sftp().unlink(&path).unwrap();
-    format!("User deleted remote file {:?}", path)
+    match connection.sftp().unlink(&path) {
+        Ok(_) => format!("User deleted remote file {:?}", path),
+        Err(e) => e.to_string(),
+    }
 }
 
 pub fn put_file(connection: &Connection) -> String {
     let source = input::prompt_path("\nLocal path to upload: ");
-    let dest = input::prompt_path("\nRemote destination path: ");
-    let mut f = File::open(source).unwrap();
-    let mut contents = Vec::new();
 
-    f.read_to_end(&mut contents).unwrap();
-    let mut remote_file = connection
-        .session
-        .scp_send(Path::new(&dest), 0o644, contents.len() as u64, None)
-        .unwrap();
-    remote_file.write(&contents).unwrap();
+    match File::open(source) {
+        Ok(mut f) => {
+            let mut contents = Vec::new();
+            f.read_to_end(&mut contents).unwrap();
 
-    format!("User uploaded a file to remote server: {:?}", dest)
+            let dest = input::prompt_path("\nRemote destination path: ");
+            connection
+                .session
+                .scp_send(Path::new(&dest), 0o644, contents.len() as u64, None)
+                .map(|mut remote_file| remote_file.write(&contents))
+                .map(|_| format!("User uploaded a file to remote server: {:?}", dest))
+                .unwrap_or_else(|e| e.to_string())
+        }
+        Err(e) => e.to_string(),
+    }
 }
 
 pub fn put_file_multi(connection: &Connection) -> String {
     let mut done = false;
 
     while !done {
-        let source = input::prompt_path("\nLocal path to upload: ");
-        let dest = input::prompt_path("\nRemote destination path: ");
-
-        let mut f = File::open(source).unwrap();
-        let mut contents = Vec::new();
-
-        f.read_to_end(&mut contents).unwrap();
-        let mut remote_file = connection
-            .session
-            .scp_send(Path::new(&dest), 0o644, contents.len() as u64, None)
-            .unwrap();
-        remote_file.write(&contents).unwrap();
-
+        put_file(connection);
         let response = &input::string("\nAnother file?(yes or no)");
-        if response == "no" {
-            done = true;
-        }
+        done = response == "no";
     }
     format!("User uploaded multiple files to remote server.")
 }
 
 pub fn download_file(connection: &Connection) -> String {
     let target = &input::prompt_path("\nWhich file would you like to download?: ");
-    let (mut remote_file, _stat) = connection.session.scp_recv(target).unwrap();
-    let mut contents = Vec::new();
-    remote_file.read_to_end(&mut contents).unwrap();
-    std::fs::write(target, contents).unwrap();
-    format!("User downloaded a remote file {:?}", target)
+    match connection.session.scp_recv(target) {
+        Ok((mut remote_file, _)) => {
+            let mut contents = Vec::new();
+            remote_file.read_to_end(&mut contents).unwrap();
+            std::fs::write(target, contents).unwrap();
+            format!("User downloaded a remote file {:?}", target)
+        }
+        Err(e) => e.to_string(),
+    }
 }
 
 pub fn download_file_multi(connection: &Connection) -> String {
     let mut done = false;
 
     while !done {
-        let target = &input::prompt_path("\nWhich file would you like to download?: ");
-        let (mut remote_file, _stat) = connection.session.scp_recv(target).unwrap();
-        let mut contents = Vec::new();
-        remote_file.read_to_end(&mut contents).unwrap();
-        std::fs::write(target, contents).unwrap();
+        download_file(connection);
         let response = &input::string("\nContinue?(yes or no)");
-        if response == "no" {
-            done = true;
-        }
+        done = response == "no"
     }
     format!("User downloaded multiple files")
 }

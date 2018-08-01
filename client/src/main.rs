@@ -1,7 +1,7 @@
 extern crate client;
 
 use client::connection::Connection;
-use client::logger::ConsoleLogger;
+use client::logger::{self, ConsoleLogger};
 use client::menu::{Menu, MenuItem};
 use client::{local, remote};
 
@@ -11,6 +11,36 @@ fn main() {
 
     let mut menu = Menu::<ConsoleLogger, Connection>::new("SFTP Client", connection);
 
+    insert_local_menu_items(&mut menu);
+    insert_remote_menu_items(&mut menu);
+    menu.insert(MenuItem::new("Log off", |_| std::process::exit(0)));
+    menu.insert(MenuItem::new("Local Execute", local::execute));
+    menu.insert(MenuItem::new("Remote Execute", remote::execute));
+
+    loop {
+        menu();
+        println!("");
+    }
+}
+
+fn insert_local_menu_items<Logger: logger::Logger>(menu: &mut Menu<Logger, Connection>) {
+    menu.insert(MenuItem::new(
+        "List local directories",
+        local::list_directories,
+    ));
+
+    menu.insert(MenuItem::new(
+        "Rename file on local machine",
+        local::rename_file,
+    ));
+
+    menu.insert(MenuItem::new(
+        "Change permissions on local directory",
+        local::change_permission,
+    ));
+}
+
+fn insert_remote_menu_items<Logger: logger::Logger>(menu: &mut Menu<Logger, Connection>) {
     menu.insert(MenuItem::new(
         "List remote directories",
         remote::list_directories,
@@ -41,21 +71,6 @@ fn main() {
         remote::put_file_multi,
     ));
 
-    menu.insert(MenuItem::new(
-        "List local directories",
-        local::list_directories,
-    ));
-
-    menu.insert(MenuItem::new(
-        "Rename file on local machine",
-        local::rename_file,
-    ));
-
-    menu.insert(MenuItem::new(
-        "Change permissions on local directory",
-        local::change_permission,
-    ));
-
     menu.insert(MenuItem::new("Download remote file", remote::download_file));
 
     menu.insert(MenuItem::new(
@@ -71,13 +86,4 @@ fn main() {
         "Change permissions on remote directory",
         remote::change_permission,
     ));
-
-    menu.insert(MenuItem::new("Log off", |_| std::process::exit(0)));
-
-    menu.insert(MenuItem::new("Remote Execute", remote::execute));
-
-    loop {
-        menu();
-        println!("");
-    }
 }

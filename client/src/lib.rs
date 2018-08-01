@@ -1,7 +1,7 @@
-#![feature(unboxed_closures, fn_traits,extern_prelude)]
+#![feature(unboxed_closures, fn_traits, extern_prelude)]
 
-extern crate ssh2;
 extern crate rpassword;
+extern crate ssh2;
 
 pub mod connection;
 pub mod input;

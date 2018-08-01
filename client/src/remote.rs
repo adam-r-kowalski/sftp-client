@@ -118,8 +118,12 @@ pub fn download_file_multi(connection: &Connection) -> String {
 pub fn change_permission(connection: &Connection) -> String {
     let path = input::path();
     let permissions = input::string("\nEnter new file permissions: ");
-    connection.remote_execute(&format!("chmod {} {}", permissions, path.to_str().unwrap()));
-    format!("Changed permissions for remote file {:?} to {}", path, permissions)
+    let command = format!("chmod {} {}", permissions, path.to_str().unwrap());
+    connection.remote_execute(&command);
+    format!(
+        "Changed permissions for remote file {:?} to {}",
+        path, permissions
+    )
 }
 
 pub fn execute(connection: &Connection) -> String {

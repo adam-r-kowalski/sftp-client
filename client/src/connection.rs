@@ -1,10 +1,9 @@
-use ssh2::{Session, Sftp};
-use std::net::TcpStream;
-use std::fs::OpenOptions;
-//use std::fs::File;
 use input;
-use std::io::Write;
+use ssh2::{Session, Sftp};
+use std::fs::OpenOptions;
 use std::io::Read;
+use std::io::Write;
+use std::net::TcpStream;
 
 pub struct Connection {
     pub tcp: TcpStream,
@@ -18,10 +17,10 @@ impl Connection {
         session.handshake(&tcp).unwrap();
         session.userauth_password(username, password).unwrap();
 
-         let mut log = OpenOptions::new()                                                                                
-            .read(true)                                                                                                        
-            .append(true)                                                                                                      
-            .create(true)                                                                                                      
+        let mut log = OpenOptions::new()
+            .read(true)
+            .append(true)
+            .create(true)
             .open("connection.txt")
             .unwrap();
 
@@ -29,9 +28,9 @@ impl Connection {
             eprintln!("Couldn't write to log: {}", e);
         }
 
-        Connection {tcp, session}
+        Connection { tcp, session }
     }
-        
+
     pub fn to_container() -> Connection {
         Connection::new("server:22", "root", "root")
     }
@@ -52,9 +51,6 @@ impl Connection {
         channel.exec(command).unwrap();
         let mut s = String::new();
         channel.read_to_string(&mut s).unwrap();
-
-        println!("remote execute got here {}", s);
-
         channel.wait_close().unwrap();
         s
     }
@@ -66,13 +62,11 @@ impl Connection {
             .unwrap();
 
         let mut info = String::new();
-        log.read_to_string(&mut info)
-            .expect("something broke");
+        log.read_to_string(&mut info).expect("something broke");
 
         println!("{}", info);
-
     }
- }
+}
 
 #[cfg(test)]
 mod tests {

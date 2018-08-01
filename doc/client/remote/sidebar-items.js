@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["create_directory",""],["create_file",""],["delete_directory",""],["delete_file",""],["download_file",""],["download_file_multi",""],["list_directories",""],["put_file",""],["rename_file",""]]});
+initSidebarItems({"fn":[["change_permission",""],["create_directory",""],["create_file",""],["delete_directory",""],["delete_file",""],["download_file",""],["download_file_multi",""],["execute",""],["list_directories",""],["put_file",""],["put_file_multi",""],["rename_file",""]]});

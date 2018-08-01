@@ -39,11 +39,14 @@ pub fn change_permission(_: &Connection) -> String {
     }
 }
 
+fn execute_command(command: &str) -> String {
+    let split = command.split(" ").collect::<Vec<_>>();
+    let mut command_builder = Command::new(split[0]);
+    command_builder.args(split[1..].iter());
+    let output = command_builder.output().unwrap().stdout;
+    String::from(from_utf8(&output).unwrap())
+}
+
 pub fn execute(_: &Connection) -> String {
-    let user_input = input::string("\nEnter command: ");
-    let split_user_input = user_input.split(" ").collect::<Vec<_>>();
-    let mut command = Command::new(split_user_input[0]);
-    command.args(split_user_input[1..].iter());
-    let output = command.output().unwrap().stdout;
-    format!("{}", from_utf8(&output).unwrap())
+    format!("{}", execute_command(&input::string("\nEnter command: ")))
 }

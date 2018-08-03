@@ -18,7 +18,7 @@ fn main() {
     menu.insert(MenuItem::new("Remote Execute", remote::execute));
 
     loop {
-        menu();
+        menu.show();
         println!("");
     }
 }

@@ -1,8 +1,7 @@
 use std::fmt;
 
-use input;
-use logger::Logger;
 use connection::Connection;
+use logger::Logger;
 
 pub struct MenuItem {
     title: String,
@@ -22,25 +21,9 @@ impl MenuItem {
             callback,
         }
     }
-}
 
-impl<'a> Fn<(&'a Connection,)> for MenuItem {
-    extern "rust-call" fn call(&self, args: (&'a Connection,)) -> Self::Output {
-        (self.callback)(&args.0)
-    }
-}
-
-impl<'a> FnMut<(&'a Connection,)> for MenuItem {
-    extern "rust-call" fn call_mut(&mut self, args: (&'a Connection,)) -> Self::Output {
-        self.call(args)
-    }
-}
-
-impl<'a> FnOnce<(&'a Connection,)> for MenuItem {
-    type Output = String;
-
-    extern "rust-call" fn call_once(self, args: (&'a Connection,)) -> Self::Output {
-        self.call(args)
+    pub fn select(&self, connection: &Connection) -> String {
+        (self.callback)(&connection)
     }
 }
 
@@ -64,27 +47,12 @@ impl Menu {
     pub fn insert(&mut self, menu_item: MenuItem) {
         self.menu_items.push(menu_item)
     }
-}
 
-impl Fn<()> for Menu {
-    extern "rust-call" fn call(&self, _: ()) {
+    pub fn show(&self) {
         print!("{}", self);
-        let index = input::positive("Enter choice: ");
-        self.logger.log(&self.menu_items[index](&self.connection));
-    }
-}
-
-impl FnMut<()> for Menu {
-    extern "rust-call" fn call_mut(&mut self, args: ()) {
-        self.call(args)
-    }
-}
-
-impl FnOnce<()> for Menu {
-    type Output = ();
-
-    extern "rust-call" fn call_once(self, args: ()) {
-        self.call(args)
+        let index = self.connection.input.positive("Enter choice: ");
+        let log_entry = self.menu_items[index].select(&self.connection);
+        self.logger.log(&log_entry);
     }
 }
 

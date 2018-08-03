@@ -2,28 +2,46 @@ use rpassword;
 use std::io::{self, Write};
 use std::path::PathBuf;
 
-pub fn string(prompt: &str) -> String {
-    print!("{}", prompt);
-    io::stdout().flush().unwrap();
-    let mut input_text = String::new();
-    io::stdin().read_line(&mut input_text).unwrap();
-    String::from(input_text.trim())
+pub trait Input {
+    fn string(&self, prompt: &str) -> String;
+    fn prompt_path(&self, prompt: &str) -> PathBuf;
+    fn path(&self) -> PathBuf;
+    fn positive(&self, prompt: &str) -> usize;
+    fn password(&self) -> String;
 }
 
-pub fn prompt_path(prompt: &str) -> PathBuf {
-    let mut path = PathBuf::new();
-    path.push(string(prompt));
-    path
+pub struct ConsoleInput {}
+
+impl ConsoleInput {
+    pub fn new() -> ConsoleInput {
+        ConsoleInput {}
+    }
 }
 
-pub fn path() -> PathBuf {
-    prompt_path("\nEnter path: ")
-}
+impl Input for ConsoleInput {
+    fn string(&self, prompt: &str) -> String {
+        print!("{}", prompt);
+        io::stdout().flush().unwrap();
+        let mut input_text = String::new();
+        io::stdin().read_line(&mut input_text).unwrap();
+        String::from(input_text.trim())
+    }
 
-pub fn positive(prompt: &str) -> usize {
-    string(prompt).parse::<usize>().unwrap()
-}
+    fn prompt_path(&self, prompt: &str) -> PathBuf {
+        let mut path = PathBuf::new();
+        path.push(self.string(prompt));
+        path
+    }
 
-pub fn password() -> String {
-    rpassword::prompt_password_stdout("Enter password: ").unwrap()
+    fn path(&self) -> PathBuf {
+        self.prompt_path("\nEnter path: ")
+    }
+
+    fn positive(&self, prompt: &str) -> usize {
+        self.string(prompt).parse::<usize>().unwrap()
+    }
+
+    fn password(&self) -> String {
+        rpassword::prompt_password_stdout("Enter password: ").unwrap()
+    }
 }

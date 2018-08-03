@@ -1,17 +1,19 @@
-use input;
 use ssh2::{Session, Sftp};
 use std::fs::OpenOptions;
 use std::io::Read;
 use std::io::Write;
 use std::net::TcpStream;
 
+use input::{ConsoleInput, Input};
+
 pub struct Connection {
     pub tcp: TcpStream,
     pub session: Session,
+    pub input: Box<Input>,
 }
 
 impl Connection {
-    pub fn new(host: &str, username: &str, password: &str) -> Connection {
+    pub fn new(host: &str, username: &str, password: &str, input: Box<Input>) -> Connection {
         let tcp = TcpStream::connect(host).unwrap();
         let mut session = Session::new().unwrap();
         session.handshake(&tcp).unwrap();
@@ -27,19 +29,23 @@ impl Connection {
         if let Err(e) = writeln!(log, "Hostname: {}  Username: {}", host, username) {
             eprintln!("Couldn't write to log: {}", e);
         }
-
-        Connection { tcp, session }
+        Connection {
+            tcp,
+            session,
+            input,
+        }
     }
 
     pub fn to_container() -> Connection {
-        Connection::new("server:22", "root", "root")
+        Connection::new("server:22", "root", "root", Box::new(ConsoleInput::new()))
     }
 
     pub fn from_prompt() -> Connection {
-        let host = input::string("Enter host: ");
-        let username = input::string("Enter username: ");
-        let password = input::password();
-        Connection::new(&host, &username, &password)
+        let input = ConsoleInput::new();
+        let host = input.string("Enter host: ");
+        let username = input.string("Enter username: ");
+        let password = input.password();
+        Connection::new(&host, &username, &password, Box::new(input))
     }
 
     pub fn sftp(&self) -> Sftp {

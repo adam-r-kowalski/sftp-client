@@ -1,7 +1,7 @@
 extern crate client;
 
 use client::connection::Connection;
-use client::logger::{self, ConsoleLogger};
+use client::logger::ConsoleLogger;
 use client::menu::{Menu, MenuItem};
 use client::{local, remote};
 
@@ -9,7 +9,7 @@ fn main() {
     let connection = Connection::to_container();
     connection.read_log();
 
-    let mut menu = Menu::<ConsoleLogger, Connection>::new("SFTP Client", connection);
+    let mut menu = Menu::new("SFTP Client", connection, Box::new(ConsoleLogger::new()));
 
     insert_local_menu_items(&mut menu);
     insert_remote_menu_items(&mut menu);
@@ -23,7 +23,7 @@ fn main() {
     }
 }
 
-fn insert_local_menu_items<Logger: logger::Logger>(menu: &mut Menu<Logger, Connection>) {
+fn insert_local_menu_items(menu: &mut Menu) {
     menu.insert(MenuItem::new(
         "List local directories",
         local::list_directories,
@@ -40,7 +40,7 @@ fn insert_local_menu_items<Logger: logger::Logger>(menu: &mut Menu<Logger, Conne
     ));
 }
 
-fn insert_remote_menu_items<Logger: logger::Logger>(menu: &mut Menu<Logger, Connection>) {
+fn insert_remote_menu_items(menu: &mut Menu) {
     menu.insert(MenuItem::new(
         "List remote directories",
         remote::list_directories,

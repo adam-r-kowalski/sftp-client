@@ -1,11 +1,17 @@
 pub trait Logger {
-    fn log(content: &str);
+    fn log(&self, content: &str);
 }
 
 pub struct ConsoleLogger {}
 
+impl ConsoleLogger {
+    pub fn new() -> ConsoleLogger {
+        ConsoleLogger{}
+    }
+}
+
 impl Logger for ConsoleLogger {
-    fn log(content: &str) {
+    fn log(&self, content: &str) {
         println!("{}", content)
     }
 }

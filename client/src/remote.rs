@@ -4,7 +4,7 @@ use std::io::Read;
 use std::io::Write;
 use std::path::Path;
 
-pub fn list_directories(connection: &Connection) -> String {
+pub fn list_directories(connection: &mut Connection) -> String {
     let path = connection.input.path();
     match connection.sftp().readdir(&path) {
         Ok(d) => {
@@ -15,7 +15,11 @@ pub fn list_directories(connection: &Connection) -> String {
     }
 }
 
-pub fn create_directory(connection: &Connection) -> String {
+pub fn directory_exists(connection: &mut Connection, path: &Path) -> bool {
+    connection.sftp().readdir(path).is_ok()
+}
+
+pub fn create_directory(connection: &mut Connection) -> String {
     let path = connection.input.path();
     match connection.sftp().mkdir(&path, 0) {
         Ok(_) => format!("User created remote directory {:?}", path),
@@ -23,7 +27,7 @@ pub fn create_directory(connection: &Connection) -> String {
     }
 }
 
-pub fn delete_directory(connection: &Connection) -> String {
+pub fn delete_directory(connection: &mut Connection) -> String {
     let path = connection.input.path();
     match connection.sftp().rmdir(&path) {
         Ok(_) => format!("User deleted remote directory {:?}", path),
@@ -31,7 +35,7 @@ pub fn delete_directory(connection: &Connection) -> String {
     }
 }
 
-pub fn rename_file(connection: &Connection) -> String {
+pub fn rename_file(connection: &mut Connection) -> String {
     let source = connection.input.prompt_path("\nEnter source: ");
     let destination = connection.input.prompt_path("\nEnter destination: ");
     match connection.sftp().rename(&source, &destination, None) {
@@ -40,9 +44,14 @@ pub fn rename_file(connection: &Connection) -> String {
     }
 }
 
-pub fn create_file(connection: &Connection) -> String {
+pub fn file_exists(connection: &mut Connection, path: &Path) -> bool {
     let sftp = connection.sftp();
+    return sftp.open(path).is_ok();
+}
+
+pub fn create_file(connection: &mut Connection) -> String {
     let path = connection.input.path();
+    let sftp = connection.sftp();
     let result = sftp.create(&path);
     match result {
         Ok(_) => format!("User created remote file {:?}", path),
@@ -50,7 +59,7 @@ pub fn create_file(connection: &Connection) -> String {
     }
 }
 
-pub fn delete_file(connection: &Connection) -> String {
+pub fn delete_file(connection: &mut Connection) -> String {
     let path = connection.input.path();
     match connection.sftp().unlink(&path) {
         Ok(_) => format!("User deleted remote file {:?}", path),
@@ -58,7 +67,7 @@ pub fn delete_file(connection: &Connection) -> String {
     }
 }
 
-pub fn put_file(connection: &Connection) -> String {
+pub fn put_file(connection: &mut Connection) -> String {
     let source = connection.input.prompt_path("\nLocal path to upload: ");
 
     match File::open(source) {
@@ -78,7 +87,7 @@ pub fn put_file(connection: &Connection) -> String {
     }
 }
 
-pub fn put_file_multi(connection: &Connection) -> String {
+pub fn put_file_multi(connection: &mut Connection) -> String {
     let mut done = false;
 
     while !done {
@@ -89,7 +98,7 @@ pub fn put_file_multi(connection: &Connection) -> String {
     format!("User uploaded multiple files to remote server.")
 }
 
-pub fn download_file(connection: &Connection) -> String {
+pub fn download_file(connection: &mut Connection) -> String {
     let target = connection
         .input
         .prompt_path("\nWhich file would you like to download?: ");
@@ -105,7 +114,7 @@ pub fn download_file(connection: &Connection) -> String {
     }
 }
 
-pub fn download_file_multi(connection: &Connection) -> String {
+pub fn download_file_multi(connection: &mut Connection) -> String {
     let mut done = false;
 
     while !done {
@@ -116,7 +125,13 @@ pub fn download_file_multi(connection: &Connection) -> String {
     format!("User downloaded multiple files")
 }
 
-pub fn change_permission(connection: &Connection) -> String {
+pub fn file_permissions(connection: &mut Connection, path: &Path) -> u32 {
+    let sftp = connection.sftp();
+    let file_stat = sftp.stat(path).unwrap();
+    file_stat.perm.unwrap()
+}
+
+pub fn change_permission(connection: &mut Connection) -> String {
     let path = connection.input.path();
     let permissions = connection.input.string("\nEnter new file permissions: ");
     let command = format!("chmod {} {}", permissions, path.to_str().unwrap());
@@ -127,45 +142,7 @@ pub fn change_permission(connection: &Connection) -> String {
     )
 }
 
-pub fn execute(connection: &Connection) -> String {
-    connection.remote_execute(&connection.input.string("\nEnter command: "))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use input::MockInput;
-    use std::path::PathBuf;
-
-    #[test]
-    fn create_and_delete_directory_on_remote_server() {
-        let mut input = MockInput::new();
-        let path = PathBuf::from("/demo_directory");
-        input.set_path(&path);
-
-        let connection = Connection::to_container(Box::new(input));
-        create_directory(&connection);
-
-        assert!(connection.sftp().readdir(&path).is_ok());
-
-        delete_directory(&connection);
-
-        assert!(connection.sftp().readdir(&path).is_err());
-    }
-
-    #[test]
-    fn create_and_delete_file_on_remote_server(){
-        let mut input = MockInput::new();
-        let path = PathBuf::from("/demo_file.txt");
-        input.set_path(&path);
-        
-        let connection = Connection::to_container(Box::new(input));
-        let sftp = connection.sftp();
-
-        create_file(&connection);
-        assert!(sftp.open(&path).is_ok());
-
-        delete_file(&connection);
-        assert!(sftp.open(&path).is_err());
-    }
+pub fn execute(connection: &mut Connection) -> String {
+    let command = connection.input.string("\nEnter command: ");
+    connection.remote_execute(&command)
 }

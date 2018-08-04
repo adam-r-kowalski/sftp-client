@@ -1,13 +1,14 @@
 use rpassword;
+use std::collections::VecDeque;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 
 pub trait Input {
-    fn string(&self, prompt: &str) -> String;
-    fn prompt_path(&self, prompt: &str) -> PathBuf;
-    fn path(&self) -> PathBuf;
-    fn positive(&self, prompt: &str) -> usize;
-    fn password(&self) -> String;
+    fn string(&mut self, prompt: &str) -> String;
+    fn prompt_path(&mut self, prompt: &str) -> PathBuf;
+    fn path(&mut self) -> PathBuf;
+    fn positive(&mut self, prompt: &str) -> usize;
+    fn password(&mut self) -> String;
 }
 
 pub struct ConsoleInput {}
@@ -19,7 +20,7 @@ impl ConsoleInput {
 }
 
 impl Input for ConsoleInput {
-    fn string(&self, prompt: &str) -> String {
+    fn string(&mut self, prompt: &str) -> String {
         print!("{}", prompt);
         io::stdout().flush().unwrap();
         let mut input_text = String::new();
@@ -27,37 +28,43 @@ impl Input for ConsoleInput {
         String::from(input_text.trim())
     }
 
-    fn prompt_path(&self, prompt: &str) -> PathBuf {
+    fn prompt_path(&mut self, prompt: &str) -> PathBuf {
         let mut path = PathBuf::new();
         path.push(self.string(prompt));
         path
     }
 
-    fn path(&self) -> PathBuf {
+    fn path(&mut self) -> PathBuf {
         self.prompt_path("\nEnter path: ")
     }
 
-    fn positive(&self, prompt: &str) -> usize {
+    fn positive(&mut self, prompt: &str) -> usize {
         self.string(prompt).parse::<usize>().unwrap()
     }
 
-    fn password(&self) -> String {
+    fn password(&mut self) -> String {
         rpassword::prompt_password_stdout("Enter password: ").unwrap()
     }
 }
 
 pub struct MockInput {
     mock_string: String,
+    mock_strings: VecDeque<String>,
     mock_prompt_path: PathBuf,
+    mock_prompt_paths: VecDeque<PathBuf>,
     mock_path: PathBuf,
+    mock_paths: VecDeque<PathBuf>,
 }
 
 impl MockInput {
     pub fn new() -> MockInput {
         MockInput {
             mock_string: String::new(),
-            mock_prompt_path: PathBuf::from(String::new()),
-            mock_path: PathBuf::from(String::new()),
+            mock_strings: VecDeque::new(),
+            mock_prompt_path: PathBuf::new(),
+            mock_prompt_paths: VecDeque::new(),
+            mock_path: PathBuf::new(),
+            mock_paths: VecDeque::new(),
         }
     }
 }
@@ -67,33 +74,60 @@ impl MockInput {
         self.mock_string = String::from(value)
     }
 
+    pub fn set_strings(&mut self, values: &[&str]) {
+        for value in values {
+            self.mock_strings.push_back(value.to_string());
+        }
+    }
+
     pub fn set_prompt_path(&mut self, value: &Path) {
         self.mock_prompt_path = PathBuf::from(value)
+    }
+
+    pub fn set_prompt_paths(&mut self, values: &[&Path]) {
+        for value in values {
+            self.mock_prompt_paths.push_back(PathBuf::from(value));
+        }
     }
 
     pub fn set_path(&mut self, value: &Path) {
         self.mock_path = PathBuf::from(value)
     }
+
+    pub fn set_paths(&mut self, values: &[&Path]) {
+        for value in values {
+            self.mock_paths.push_back(PathBuf::from(value));
+        }
+    }
 }
 
 impl Input for MockInput {
-    fn string(&self, _: &str) -> String {
-        self.mock_string.clone()
+    fn string(&mut self, _: &str) -> String {
+        match self.mock_strings.pop_front() {
+            Some(p) => p.clone(),
+            None => self.mock_string.clone(),
+        }
     }
 
-    fn prompt_path(&self, _: &str) -> PathBuf {
-        self.mock_prompt_path.clone()
+    fn prompt_path(&mut self, _: &str) -> PathBuf {
+        match self.mock_prompt_paths.pop_front() {
+            Some(p) => p.clone(),
+            None => self.mock_prompt_path.clone(),
+        }
     }
 
-    fn path(&self) -> PathBuf {
-        self.mock_path.clone()
+    fn path(&mut self) -> PathBuf {
+        match self.mock_paths.pop_front() {
+            Some(p) => p.clone(),
+            None => self.mock_path.clone(),
+        }
     }
 
-    fn positive(&self, _: &str) -> usize {
+    fn positive(&mut self, _: &str) -> usize {
         0
     }
 
-    fn password(&self) -> String {
+    fn password(&mut self) -> String {
         String::new()
     }
 }

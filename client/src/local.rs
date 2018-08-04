@@ -4,7 +4,7 @@ use std::fs::File;
 use std::process::Command;
 use std::str::from_utf8;
 
-pub fn list_directories(connection: &Connection) -> String {
+pub fn list_directories(connection: &mut Connection) -> String {
     let path = connection.input.path();
     match fs::read_dir(&path) {
         Ok(p) => {
@@ -16,7 +16,7 @@ pub fn list_directories(connection: &Connection) -> String {
     }
 }
 
-pub fn rename_file(connection: &Connection) -> String {
+pub fn rename_file(connection: &mut Connection) -> String {
     let old_path = connection.input.prompt_path("Enter old path: ");
     let new_path = connection.input.prompt_path("Enter new path: ");
     match fs::rename(&old_path, &new_path) {
@@ -25,7 +25,7 @@ pub fn rename_file(connection: &Connection) -> String {
     }
 }
 
-pub fn change_permission(connection: &Connection) -> String {
+pub fn change_permission(connection: &mut Connection) -> String {
     let path = connection.input.path();
     match File::open(&path) {
         Ok(file) => {
@@ -46,7 +46,7 @@ fn execute_command(command: &str) -> String {
     String::from(from_utf8(&output).unwrap())
 }
 
-pub fn execute(connection: &Connection) -> String {
+pub fn execute(connection: &mut Connection) -> String {
     format!(
         "{}",
         execute_command(&connection.input.string("\nEnter command: "))

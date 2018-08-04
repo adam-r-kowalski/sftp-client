@@ -5,7 +5,7 @@ use logger::Logger;
 
 pub struct MenuItem {
     title: String,
-    callback: fn(&Connection) -> String,
+    callback: fn(&mut Connection) -> String,
 }
 
 impl fmt::Display for MenuItem {
@@ -15,15 +15,15 @@ impl fmt::Display for MenuItem {
 }
 
 impl MenuItem {
-    pub fn new(title: &str, callback: fn(&Connection) -> String) -> MenuItem {
+    pub fn new(title: &str, callback: fn(&mut Connection) -> String) -> MenuItem {
         MenuItem {
             title: String::from(title),
             callback,
         }
     }
 
-    pub fn select(&self, connection: &Connection) -> String {
-        (self.callback)(&connection)
+    pub fn select(&self, connection: &mut Connection) -> String {
+        (self.callback)(connection)
     }
 }
 
@@ -48,10 +48,10 @@ impl Menu {
         self.menu_items.push(menu_item)
     }
 
-    pub fn show(&self) {
+    pub fn show(&mut self) {
         print!("{}", self);
         let index = self.connection.input.positive("Enter choice: ");
-        let log_entry = self.menu_items[index].select(&self.connection);
+        let log_entry = self.menu_items[index].select(&mut self.connection);
         self.logger.log(&log_entry);
     }
 }

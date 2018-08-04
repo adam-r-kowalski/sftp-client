@@ -40,7 +40,7 @@ impl Connection {
         Connection::new("server:22", "root", "root", input)
     }
 
-    pub fn from_prompt(input: Box<Input>) -> Connection {
+    pub fn from_prompt(mut input: Box<Input>) -> Connection {
         let host = input.string("Enter host: ");
         let username = input.string("Enter username: ");
         let password = input.password();

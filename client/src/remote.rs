@@ -152,4 +152,20 @@ mod tests {
 
         assert!(connection.sftp().readdir(&path).is_err());
     }
+
+    #[test]
+    fn create_and_delete_file_on_remote_server(){
+        let mut input = MockInput::new();
+        let path = PathBuf::from("/demo_file.txt");
+        input.set_path(&path);
+        
+        let connection = Connection::to_container(Box::new(input));
+        let sftp = connection.sftp();
+
+        create_file(&connection);
+        assert!(sftp.open(&path).is_ok());
+
+        delete_file(&connection);
+        assert!(sftp.open(&path).is_err());
+    }
 }

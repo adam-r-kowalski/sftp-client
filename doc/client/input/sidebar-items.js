@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["password",""],["path",""],["positive",""],["prompt_path",""],["string",""]]});
+initSidebarItems({"struct":[["ConsoleInput",""],["MockInput",""]],"trait":[["Input",""]]});

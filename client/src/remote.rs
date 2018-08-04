@@ -130,3 +130,26 @@ pub fn change_permission(connection: &Connection) -> String {
 pub fn execute(connection: &Connection) -> String {
     connection.remote_execute(&connection.input.string("\nEnter command: "))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use input::MockInput;
+    use std::path::PathBuf;
+
+    #[test]
+    fn create_and_delete_directory_on_remote_server() {
+        let mut input = MockInput::new();
+        let path = PathBuf::from("/demo_directory");
+        input.set_path(&path);
+
+        let connection = Connection::to_container(Box::new(input));
+        create_directory(&connection);
+
+        assert!(connection.sftp().readdir(&path).is_ok());
+
+        delete_directory(&connection);
+
+        assert!(connection.sftp().readdir(&path).is_err());
+    }
+}

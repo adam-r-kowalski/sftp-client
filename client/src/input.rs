@@ -1,6 +1,6 @@
 use rpassword;
 use std::io::{self, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 pub trait Input {
     fn string(&self, prompt: &str) -> String;
@@ -63,15 +63,15 @@ impl MockInput {
 }
 
 impl MockInput {
-    pub fn set_string(&mut self, value: String) {
-        self.mock_string = value
+    pub fn set_string(&mut self, value: &str) {
+        self.mock_string = String::from(value)
     }
 
-    pub fn set_prompt_path(&mut self, value: String) {
+    pub fn set_prompt_path(&mut self, value: &Path) {
         self.mock_prompt_path = PathBuf::from(value)
     }
 
-    pub fn set_path(&mut self, value: String) {
+    pub fn set_path(&mut self, value: &Path) {
         self.mock_path = PathBuf::from(value)
     }
 }

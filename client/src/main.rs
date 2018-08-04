@@ -1,12 +1,13 @@
 extern crate client;
 
 use client::connection::Connection;
+use client::input::ConsoleInput;
 use client::logger::ConsoleLogger;
 use client::menu::{Menu, MenuItem};
 use client::{local, remote};
 
 fn main() {
-    let connection = Connection::to_container();
+    let connection = Connection::to_container(Box::new(ConsoleInput::new()));
     connection.read_log();
 
     let mut menu = Menu::new("SFTP Client", connection, Box::new(ConsoleLogger::new()));

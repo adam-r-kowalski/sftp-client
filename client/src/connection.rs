@@ -4,7 +4,7 @@ use std::io::Read;
 use std::io::Write;
 use std::net::TcpStream;
 
-use input::{ConsoleInput, Input};
+use input::Input;
 
 pub struct Connection {
     pub tcp: TcpStream,
@@ -36,16 +36,15 @@ impl Connection {
         }
     }
 
-    pub fn to_container() -> Connection {
-        Connection::new("server:22", "root", "root", Box::new(ConsoleInput::new()))
+    pub fn to_container(input: Box<Input>) -> Connection {
+        Connection::new("server:22", "root", "root", input)
     }
 
-    pub fn from_prompt() -> Connection {
-        let input = ConsoleInput::new();
+    pub fn from_prompt(input: Box<Input>) -> Connection {
         let host = input.string("Enter host: ");
         let username = input.string("Enter username: ");
         let password = input.password();
-        Connection::new(&host, &username, &password, Box::new(input))
+        Connection::new(&host, &username, &password, input)
     }
 
     pub fn sftp(&self) -> Sftp {
@@ -71,26 +70,5 @@ impl Connection {
         log.read_to_string(&mut info).expect("something broke");
 
         println!("{}", info);
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::path::Path;
-
-    #[test]
-    fn log_into_remote_ftp_server() {
-        Connection::to_container();
-    }
-
-    #[test]
-    fn create_directory_on_remote_server() {
-        let connection = Connection::to_container();
-        let sftp = connection.sftp();
-        let path = Path::new("/demo");
-        sftp.mkdir(path, 0).unwrap();
-        sftp.readdir(path).unwrap();
-        sftp.rmdir(path).unwrap();
     }
 }

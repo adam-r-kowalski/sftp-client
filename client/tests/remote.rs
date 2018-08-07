@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use client::connection::Connection;
 use client::input::MockInput;
 use client::remote;
+use std::process::Command;
 
 #[test]
 fn create_and_delete_directory() {
@@ -74,4 +75,28 @@ fn rename_file() {
 
     remote::delete_file(&mut connection);
     assert!(!remote::file_exists(&mut connection, &destination_path));
+}
+
+#[test]
+fn create_download_and_delete_file() {
+    let mut input = MockInput::new();
+    let path = PathBuf::from("/demo_file4.txt");
+    input.set_path(&path);
+
+    let mut connection = Connection::to_container(Box::new(input));
+
+    remote::create_file(&mut connection);
+    assert!(remote::file_exists(&mut connection, &path));
+	
+	remote::download_file(&mut connection);
+	
+    let status = Command::new("/bin/rm")
+        .arg(&path)
+        .status()
+        .expect("failed to execute process");
+					 
+	assert!(status.success());	
+
+    remote::delete_file(&mut connection);
+    assert!(!remote::file_exists(&mut connection, &path));
 }

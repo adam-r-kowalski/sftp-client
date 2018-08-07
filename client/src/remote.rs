@@ -99,16 +99,16 @@ pub fn put_file_multi(connection: &mut Connection) -> String {
 }
 
 pub fn download_file(connection: &mut Connection) -> String {
-    let target = connection
+    let path = connection
         .input
         .prompt_path("\nWhich file would you like to download?: ");
 
-    match connection.session.scp_recv(&target) {
+    match connection.session.scp_recv(&path) {
         Ok((mut remote_file, _)) => {
             let mut contents = Vec::new();
             remote_file.read_to_end(&mut contents).unwrap();
-            std::fs::write(&target, contents).unwrap();
-            format!("User downloaded a remote file {:?}", target)
+            std::fs::write(&path, contents).unwrap();
+            format!("User downloaded a remote file {:?}", path)
         }
         Err(e) => e.to_string(),
     }

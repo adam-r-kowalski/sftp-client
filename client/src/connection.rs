@@ -71,4 +71,7 @@ impl Connection {
 
         info
     }
+    pub fn view_connection_info(connection: &mut Connection) -> String {
+        connection.read_log()
+    }
 }

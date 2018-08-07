@@ -78,7 +78,7 @@ fn rename_file() {
 }
 
 #[test]
-fn create_download_and_delete_file() {
+fn download_file() {
     let mut input = MockInput::new();
     let path = PathBuf::from("/demo_file4.txt");
     input.set_path(&path);
@@ -86,17 +86,13 @@ fn create_download_and_delete_file() {
     let mut connection = Connection::to_container(Box::new(input));
 
     remote::create_file(&mut connection);
-    assert!(remote::file_exists(&mut connection, &path));
-	
-	remote::download_file(&mut connection);
-	
+    remote::download_file(&mut connection);
+
     let status = Command::new("/bin/rm")
         .arg(&path)
         .status()
         .expect("failed to execute process");
-					 
-	assert!(status.success());	
 
+    assert!(status.success());
     remote::delete_file(&mut connection);
-    assert!(!remote::file_exists(&mut connection, &path));
 }

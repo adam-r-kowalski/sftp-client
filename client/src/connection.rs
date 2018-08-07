@@ -21,7 +21,7 @@ impl Connection {
 
         let mut log = OpenOptions::new()
             .read(true)
-            .append(true)
+            .write(true)
             .create(true)
             .open("connection.txt")
             .unwrap();
@@ -60,7 +60,7 @@ impl Connection {
         s
     }
 
-    pub fn read_log(&self) {
+    pub fn read_log(&self) -> String {
         let mut log = OpenOptions::new()
             .read(true)
             .open("connection.txt")
@@ -69,6 +69,6 @@ impl Connection {
         let mut info = String::new();
         log.read_to_string(&mut info).expect("something broke");
 
-        println!("{}", info);
+        info
     }
 }

@@ -99,9 +99,7 @@ pub fn put_file_multi(connection: &mut Connection) -> String {
 }
 
 pub fn download_file(connection: &mut Connection) -> String {
-    let path = connection
-        .input
-        .prompt_path("\nWhich file would you like to download?: ");
+    let path = connection.input.path();
 
     match connection.session.scp_recv(&path) {
         Ok((mut remote_file, _)) => {

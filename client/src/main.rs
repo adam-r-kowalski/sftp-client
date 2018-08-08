@@ -13,13 +13,11 @@ fn main() {
 
     insert_local_menu_items(&mut menu);
     insert_remote_menu_items(&mut menu);
-    menu.insert(MenuItem::new("View Conenction Info", Connection::view_connection_info));
+    menu.insert(MenuItem::new(
+        "View Conenction Info",
+        Connection::view_connection_info,
+    ));
     menu.insert(MenuItem::new("Log off", |_| std::process::exit(0)));
-
-
-    menu.insert(MenuItem::new("Local Execute", local::execute));
-    menu.insert(MenuItem::new("Remote Execute", remote::execute));
-
     loop {
         menu.show();
         println!("");

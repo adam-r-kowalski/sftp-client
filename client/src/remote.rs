@@ -144,8 +144,3 @@ pub fn change_permission(connection: &mut Connection) -> String {
         path, permissions
     )
 }
-
-pub fn execute(connection: &mut Connection) -> String {
-    let command = connection.input.string("\nEnter command: ");
-    connection.remote_execute(&command)
-}

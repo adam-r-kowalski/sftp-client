@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 use client::connection::Connection;
 use client::input::MockInput;
-use client::remote;
+use client::{local, remote};
 use std::process::Command;
 
 #[test]
@@ -107,13 +107,10 @@ fn download_file() {
     let mut connection = Connection::to_container(Box::new(input));
 
     remote::create_file(&mut connection);
+
     remote::download_file(&mut connection);
+    assert!(local::file_exists(&mut connection, &path));
 
-    let status = Command::new("/bin/rm")
-        .arg(&path)
-        .status()
-        .expect("failed to execute process");
-
-    assert!(status.success());
+    local::delete_file(&mut connection);
     remote::delete_file(&mut connection);
 }

@@ -8,7 +8,7 @@ use client::remote;
 use std::process::Command;
 
 #[test]
-fn create_and_delete_directory() {
+fn create_directory() {
     let mut input = MockInput::new();
     let path = PathBuf::from("/demo_directory_1");
     input.set_path(&path);
@@ -19,11 +19,23 @@ fn create_and_delete_directory() {
     assert!(remote::directory_exists(&mut connection, &path));
 
     remote::delete_directory(&mut connection);
+}
+
+#[test]
+fn delete_directory() {
+    let mut input = MockInput::new();
+    let path = PathBuf::from("/demo_directory_2");
+    input.set_path(&path);
+
+    let mut connection = Connection::to_container(Box::new(input));
+    remote::create_directory(&mut connection);
+
+    remote::delete_directory(&mut connection);
     assert!(!remote::directory_exists(&mut connection, &path));
 }
 
 #[test]
-fn create_and_delete_file() {
+fn create_file() {
     let mut input = MockInput::new();
     let path = PathBuf::from("/demo_file1.txt");
     input.set_path(&path);
@@ -34,13 +46,25 @@ fn create_and_delete_file() {
     assert!(remote::file_exists(&mut connection, &path));
 
     remote::delete_file(&mut connection);
+}
+
+#[test]
+fn delete_file() {
+    let mut input = MockInput::new();
+    let path = PathBuf::from("/demo_file2.txt");
+    input.set_path(&path);
+
+    let mut connection = Connection::to_container(Box::new(input));
+    remote::create_file(&mut connection);
+
+    remote::delete_file(&mut connection);
     assert!(!remote::file_exists(&mut connection, &path));
 }
 
 #[test]
 fn change_permissions() {
     let mut input = MockInput::new();
-    let path = PathBuf::from("/demo_file2.txt");
+    let path = PathBuf::from("/demo_file3.txt");
     input.set_path(&path);
     input.set_string("777");
 
@@ -58,29 +82,26 @@ fn change_permissions() {
 #[test]
 fn rename_file() {
     let mut input = MockInput::new();
-    let source_path = PathBuf::from("/demo_file3.txt");
-    let destination_path = PathBuf::from("/demo_file3_renamed.txt");
+    let source_path = PathBuf::from("/demo_file4.txt");
+    let destination_path = PathBuf::from("/demo_file4_renamed.txt");
 
     input.set_paths(&[&source_path, &destination_path]);
     input.set_prompt_paths(&[&source_path, &destination_path]);
 
     let mut connection = Connection::to_container(Box::new(input));
-
     remote::create_file(&mut connection);
-    assert!(remote::file_exists(&mut connection, &source_path));
 
     remote::rename_file(&mut connection);
     assert!(!remote::file_exists(&mut connection, &source_path));
     assert!(remote::file_exists(&mut connection, &destination_path));
 
     remote::delete_file(&mut connection);
-    assert!(!remote::file_exists(&mut connection, &destination_path));
 }
 
 #[test]
 fn download_file() {
     let mut input = MockInput::new();
-    let path = PathBuf::from("/demo_file4.txt");
+    let path = PathBuf::from("/demo_file5.txt");
     input.set_path(&path);
 
     let mut connection = Connection::to_container(Box::new(input));

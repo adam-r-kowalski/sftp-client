@@ -76,6 +76,11 @@ pub fn put_file(connection: &mut Connection) -> String {
             f.read_to_end(&mut contents).unwrap();
 
             let dest = connection.input.prompt_path("\nRemote destination path: ");
+            /* 
+             Map allows you to assume the previous function succeeded and run a
+             lambda on the successful case. We handle any error cases with the
+             lambda in unwrap_or_else
+            */
             connection
                 .session
                 .scp_send(Path::new(&dest), 0o644, contents.len() as u64, None)

@@ -56,6 +56,12 @@ pub struct MockInput {
     mock_paths: VecDeque<PathBuf>,
 }
 
+/* 
+  This is used to replace console input for tests.
+  Normally the user is prompted for input and we needed
+  to abstract that away so the a user is not necessary at
+  test time
+*/
 impl MockInput {
     pub fn new() -> MockInput {
         MockInput {
@@ -67,9 +73,7 @@ impl MockInput {
             mock_paths: VecDeque::new(),
         }
     }
-}
 
-impl MockInput {
     pub fn set_string(&mut self, value: &str) {
         self.mock_string = String::from(value)
     }

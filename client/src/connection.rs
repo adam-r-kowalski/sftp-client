@@ -6,6 +6,7 @@ use std::net::TcpStream;
 
 use input::Input;
 
+// This struct is used to establish a connection to a sftp server
 pub struct Connection {
     pub tcp: TcpStream,
     pub session: Session,

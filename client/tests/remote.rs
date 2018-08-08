@@ -114,3 +114,21 @@ fn download_file() {
     local::delete_file(&mut connection);
     remote::delete_file(&mut connection);
 }
+
+#[test]
+fn upload_file() {
+    let mut input = MockInput::new();
+    let path = PathBuf::from("/demo_file6.txt");
+    input.set_path(&path);
+	
+	//going through this to make a local file
+	let mut connection = Connection::to_container(Box::new(input));
+    remote::create_file(&mut connection);
+    remote::download_file(&mut connection);
+    remote::delete_file(&mut connection);
+	
+	remote::put_file(&mut connection);
+    local::delete_file(&mut connection);
+	assert!(remote::file_exists(&mut connection, &path));
+    remote::delete_file(&mut connection);
+}

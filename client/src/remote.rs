@@ -68,14 +68,14 @@ pub fn delete_file(connection: &mut Connection) -> String {
 }
 
 pub fn put_file(connection: &mut Connection) -> String {
-    let source = connection.input.prompt_path("\nLocal path to upload: ");
+    let source = connection.input.path();
 
     match File::open(source) {
         Ok(mut f) => {
             let mut contents = Vec::new();
             f.read_to_end(&mut contents).unwrap();
 
-            let dest = connection.input.prompt_path("\nRemote destination path: ");
+            let dest = connection.input.path();
             /* 
              Map allows you to assume the previous function succeeded and run a
              lambda on the successful case. We handle any error cases with the

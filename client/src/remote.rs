@@ -67,7 +67,7 @@ pub fn delete_file(connection: &mut Connection) -> String {
     }
 }
 
-pub fn put_file(connection: &mut Connection) -> String {
+pub fn upload_file(connection: &mut Connection) -> String {
     let source = connection.input.path();
 
     match File::open(source) {
@@ -92,11 +92,11 @@ pub fn put_file(connection: &mut Connection) -> String {
     }
 }
 
-pub fn put_file_multi(connection: &mut Connection) -> String {
+pub fn upload_multiple_files(connection: &mut Connection) -> String {
     let mut done = false;
 
     while !done {
-        put_file(connection);
+        upload_file(connection);
         let response = connection.input.string("\nAnother file?(yes or no)");
         done = response == "no";
     }
@@ -117,7 +117,7 @@ pub fn download_file(connection: &mut Connection) -> String {
     }
 }
 
-pub fn download_file_multi(connection: &mut Connection) -> String {
+pub fn download_multiple_files(connection: &mut Connection) -> String {
     let mut done = false;
 
     while !done {

@@ -46,6 +46,14 @@ pub fn execute_command(command: &str) -> String {
     String::from(from_utf8(&output).unwrap())
 }
 
+pub fn create_file(connection: &mut Connection) -> String {
+    let path = connection.input.path();
+    match File::create(&path) {
+        Ok(_) => format!("User created local file {:?}", path),
+        Err(e) => e.to_string(),
+    }
+}
+
 pub fn delete_file(connection: &mut Connection) -> String {
     let path = connection.input.path();
     match fs::remove_file(&path) {

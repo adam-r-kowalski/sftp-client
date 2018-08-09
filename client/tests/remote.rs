@@ -5,7 +5,6 @@ use std::path::PathBuf;
 use client::connection::Connection;
 use client::input::MockInput;
 use client::{local, remote};
-use std::process::Command;
 
 #[test]
 fn create_directory() {
@@ -120,15 +119,11 @@ fn upload_file() {
     let mut input = MockInput::new();
     let path = PathBuf::from("/demo_file6.txt");
     input.set_path(&path);
-	
-	//going through this to make a local file
-	let mut connection = Connection::to_container(Box::new(input));
-    remote::create_file(&mut connection);
-    remote::download_file(&mut connection);
-    remote::delete_file(&mut connection);
-	
-	remote::put_file(&mut connection);
+
+    let mut connection = Connection::to_container(Box::new(input));
+    local::create_file(&mut connection);
+    remote::upload_file(&mut connection);
     local::delete_file(&mut connection);
-	assert!(remote::file_exists(&mut connection, &path));
+    assert!(remote::file_exists(&mut connection, &path));
     remote::delete_file(&mut connection);
 }

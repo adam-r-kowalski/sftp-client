@@ -63,20 +63,20 @@ fn insert_remote_menu_items(menu: &mut Menu) {
     ));
 
     menu.insert(MenuItem::new(
-        "Put file onto remote server",
-        remote::put_file,
+        "Upload file onto remote server",
+        remote::upload_file,
     ));
 
     menu.insert(MenuItem::new(
-        "Put multiple files onto remote server",
-        remote::put_file_multi,
+        "Upload multiple files onto remote server",
+        remote::upload_multiple_files,
     ));
 
     menu.insert(MenuItem::new("Download remote file", remote::download_file));
 
     menu.insert(MenuItem::new(
         "Download multiple remote file",
-        remote::download_file_multi,
+        remote::download_multiple_files,
     ));
 
     menu.insert(MenuItem::new("Create remote file", remote::create_file));

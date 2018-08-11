@@ -1,8 +1,8 @@
 extern crate chrono;
 use self::chrono::Local;
 
-use std::fs::OpenOptions;
-use std::io::Write;
+use std::fs::{File, OpenOptions};
+use std::io::{Read, Write};
 
 /*
   Every action will have a corresponding log entry
@@ -10,18 +10,28 @@ use std::io::Write;
   they have taken. It will also be useful for diagnostics
   to find out why something went wrong
 */
-pub fn log(content: &str) {
-    println!("{}", content);
+pub struct Logger {
+    log_file: File,
+}
 
-    let mut record = OpenOptions::new()
-        .write(true)
-        .append(true)
-        .create(true)
-        .open("logger.txt")
-        .unwrap();
+impl Logger {
+    pub fn new() -> Logger {
+        Logger {
+            log_file: OpenOptions::new()
+                .read(true)
+                .write(true)
+                .create(true)
+                .open("logger.txt")
+                .unwrap(),
+        }
+    }
 
-    let formated_date = Local::now().format("[%Y-%m-%d][%H:%M:%S]");
-    if let Err(e) = writeln!(record, "{} {}", formated_date, content) {
-        eprintln!("Couldn't write to logger: {}", e);
+    pub fn log(&mut self, content: &str) {
+        println!("{}", content);
+
+        let formated_date = Local::now().format("[%Y-%m-%d][%H:%M:%S]");
+        if let Err(e) = writeln!(self.log_file, "{} {}", formated_date, content) {
+            eprintln!("Couldn't write to logger: {}", e);
+        }
     }
 }

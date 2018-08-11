@@ -1,9 +1,13 @@
 var ALIASES = {};
 ALIASES['bitflags'] = {};
+ALIASES['chrono'] = {};
 ALIASES['client'] = {};
 ALIASES['libc'] = {};
 ALIASES['libssh2_sys'] = {};
 ALIASES['libz_sys'] = {};
+ALIASES['num_integer'] = {};
+ALIASES['num_traits'] = {};
 ALIASES['openssl_sys'] = {};
 ALIASES['rpassword'] = {};
 ALIASES['ssh2'] = {};
+ALIASES['time'] = {};

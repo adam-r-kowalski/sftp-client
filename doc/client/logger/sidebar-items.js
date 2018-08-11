@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["ConsoleLogger",""]],"trait":[["Logger",""]]});
+initSidebarItems({"struct":[["Logger",""]]});

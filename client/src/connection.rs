@@ -4,7 +4,7 @@ use std::io::Read;
 use std::io::Write;
 use std::net::TcpStream;
 
-use input::Input;
+use input::{ConsoleInput, Input, MockInput};
 
 // This struct is used to establish a connection to a sftp server
 pub struct Connection {
@@ -42,15 +42,16 @@ impl Connection {
         }
     }
 
-    pub fn to_container(input: Box<Input>) -> Connection {
-        Connection::new("server:22", "root", "root", input)
+    pub fn to_container(input: MockInput) -> Connection {
+        Connection::new("server:22", "root", "root", Box::new(input))
     }
 
-    pub fn from_prompt(mut input: Box<Input>) -> Connection {
+    pub fn from_prompt() -> Connection {
+        let mut input = ConsoleInput::new();
         let host = input.string("Enter host: ");
         let username = input.string("Enter username: ");
         let password = input.password();
-        Connection::new(&host, &username, &password, input)
+        Connection::new(&host, &username, &password, Box::new(input))
     }
 
     pub fn sftp(&self) -> Sftp {

@@ -12,7 +12,7 @@ fn create_directory() {
     let path = PathBuf::from("/demo_directory_1");
     input.set_path(&path);
 
-    let mut connection = Connection::to_container(Box::new(input));
+    let mut connection = Connection::to_container(input);
 
     remote::create_directory(&mut connection);
     assert!(remote::directory_exists(&mut connection, &path));
@@ -26,7 +26,7 @@ fn delete_directory() {
     let path = PathBuf::from("/demo_directory_2");
     input.set_path(&path);
 
-    let mut connection = Connection::to_container(Box::new(input));
+    let mut connection = Connection::to_container(input);
     remote::create_directory(&mut connection);
 
     remote::delete_directory(&mut connection);
@@ -41,18 +41,17 @@ fn copy_directory() {
     let new_path = PathBuf::from("/demo_directory_4");
     input.set_path(&new_path);
 
-    let mut connection = Connection::to_container(Box::new(input));
+    let mut connection = Connection::to_container(input);
     remote::create_directory(&mut connection);
-    
+
     let mut input2 = MockInput::new();
-    input2.set_path(&path);    
-    let mut connection2 = Connection::to_container(Box::new(input2));
+    input2.set_path(&path);
+    let mut connection2 = Connection::to_container(input2);
     remote::copy_directory(&mut connection);
     assert!(remote::directory_exists(&mut connection, &new_path));
     remote::delete_directory(&mut connection2);
     remote::delete_directory(&mut connection);
 }
-    
 
 #[test]
 fn create_file() {
@@ -60,7 +59,7 @@ fn create_file() {
     let path = PathBuf::from("/demo_file1.txt");
     input.set_path(&path);
 
-    let mut connection = Connection::to_container(Box::new(input));
+    let mut connection = Connection::to_container(input);
 
     remote::create_file(&mut connection);
     assert!(remote::file_exists(&mut connection, &path));
@@ -74,7 +73,7 @@ fn delete_file() {
     let path = PathBuf::from("/demo_file2.txt");
     input.set_path(&path);
 
-    let mut connection = Connection::to_container(Box::new(input));
+    let mut connection = Connection::to_container(input);
     remote::create_file(&mut connection);
 
     remote::delete_file(&mut connection);
@@ -88,7 +87,7 @@ fn change_permissions() {
     input.set_path(&path);
     input.set_string("777");
 
-    let mut connection = Connection::to_container(Box::new(input));
+    let mut connection = Connection::to_container(input);
 
     remote::create_file(&mut connection);
     assert!(remote::file_permissions(&mut connection, &path) == 33188);
@@ -108,7 +107,7 @@ fn rename_file() {
     input.set_paths(&[&source_path, &destination_path]);
     input.set_prompt_paths(&[&source_path, &destination_path]);
 
-    let mut connection = Connection::to_container(Box::new(input));
+    let mut connection = Connection::to_container(input);
     remote::create_file(&mut connection);
 
     remote::rename_file(&mut connection);
@@ -124,7 +123,7 @@ fn download_file() {
     let path = PathBuf::from("/demo_file5.txt");
     input.set_path(&path);
 
-    let mut connection = Connection::to_container(Box::new(input));
+    let mut connection = Connection::to_container(input);
 
     remote::create_file(&mut connection);
 
@@ -141,7 +140,7 @@ fn upload_file() {
     let path = PathBuf::from("/demo_file6.txt");
     input.set_path(&path);
 
-    let mut connection = Connection::to_container(Box::new(input));
+    let mut connection = Connection::to_container(input);
     local::create_file(&mut connection);
     remote::upload_file(&mut connection);
     local::delete_file(&mut connection);

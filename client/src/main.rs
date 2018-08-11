@@ -63,6 +63,11 @@ fn insert_remote_menu_items(menu: &mut Menu) {
     ));
 
     menu.insert(MenuItem::new(
+        "Copy remote directory",
+        remote::copy_directory,
+    ));
+
+    menu.insert(MenuItem::new(
         "Upload file onto remote server",
         remote::upload_file,
     ));

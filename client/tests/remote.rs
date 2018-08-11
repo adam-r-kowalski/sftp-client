@@ -34,6 +34,27 @@ fn delete_directory() {
 }
 
 #[test]
+fn copy_directory() {
+    let mut input = MockInput::new();
+    let path = PathBuf::from("/demo_directory_3");
+    input.set_path(&path);
+    let new_path = PathBuf::from("/demo_directory_4");
+    input.set_path(&new_path);
+
+    let mut connection = Connection::to_container(Box::new(input));
+    remote::create_directory(&mut connection);
+    
+    let mut input2 = MockInput::new();
+    input2.set_path(&path);    
+    let mut connection2 = Connection::to_container(Box::new(input2));
+    remote::copy_directory(&mut connection);
+    assert!(remote::directory_exists(&mut connection, &new_path));
+    remote::delete_directory(&mut connection2);
+    remote::delete_directory(&mut connection);
+}
+    
+
+#[test]
 fn create_file() {
     let mut input = MockInput::new();
     let path = PathBuf::from("/demo_file1.txt");

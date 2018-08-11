@@ -2,14 +2,13 @@ extern crate client;
 
 use client::connection::Connection;
 use client::input::ConsoleInput;
-use client::logger::ConsoleLogger;
 use client::menu::{Menu, MenuItem};
 use client::{local, remote};
 
 fn main() {
     let connection = Connection::to_container(Box::new(ConsoleInput::new()));
 
-    let mut menu = Menu::new("SFTP Client", connection, Box::new(ConsoleLogger::new()));
+    let mut menu = Menu::new("SFTP Client", connection);
 
     insert_local_menu_items(&mut menu);
     insert_remote_menu_items(&mut menu);
@@ -92,5 +91,4 @@ fn insert_remote_menu_items(menu: &mut Menu) {
         "Download multiple remote files",
         remote::download_multiple_files,
     ));
-
 }

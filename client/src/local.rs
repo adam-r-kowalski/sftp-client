@@ -27,12 +27,17 @@ pub fn rename_file(connection: &mut Connection) -> String {
 
 pub fn change_permission(connection: &mut Connection) -> String {
     let path = connection.input.path();
-    let permissions = connection.input.string("Enter new permissions in octal format (e.g. 754): ");
+    let permissions = connection
+        .input
+        .string("Enter new permissions in octal format (e.g. 754): ");
     let command = format!("chmod {} {}", permissions, path.to_str().unwrap());
     execute_command(&command);
-    format!("Changed permissions for local file {:?} to {}", path, permissions)
+    format!(
+        "Changed permissions for local file {:?} to {}",
+        path, permissions
+    )
 }
- 
+
 pub fn execute_command(command: &str) -> String {
     let split = command.split(" ").collect::<Vec<_>>();
     let mut command_builder = Command::new(split[0]);

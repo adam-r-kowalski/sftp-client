@@ -1,7 +1,7 @@
 use std::fmt;
 
 use connection::Connection;
-use logger::Logger;
+use logger::log;
 
 pub struct MenuItem {
     title: String,
@@ -31,16 +31,14 @@ pub struct Menu {
     connection: Connection,
     name: String,
     menu_items: Vec<MenuItem>,
-    logger: Box<Logger>,
 }
 
 impl Menu {
-    pub fn new(name: &str, connection: Connection, logger: Box<Logger>) -> Menu {
+    pub fn new(name: &str, connection: Connection) -> Menu {
         Menu {
             connection,
             name: String::from(name),
             menu_items: vec![],
-            logger: logger,
         }
     }
 
@@ -52,7 +50,7 @@ impl Menu {
         print!("{}", self);
         let index = self.connection.input.positive("Enter choice: ");
         let log_entry = self.menu_items[index].select(&mut self.connection);
-        self.logger.log(&log_entry);
+        log(&log_entry);
     }
 }
 

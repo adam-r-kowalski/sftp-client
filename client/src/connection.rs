@@ -72,6 +72,7 @@ impl Connection {
         log.read_to_string(&mut info).expect("something broke");
         info
     }
+
     pub fn view_connection_info(_connection: &mut Connection) -> String {
         Connection::read_log()
     }

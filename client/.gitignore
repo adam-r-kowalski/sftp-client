@@ -1,3 +1,4 @@
 connection.txt
+logger.txt
 /target
 **/*.rs.bk

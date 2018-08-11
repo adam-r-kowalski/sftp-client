@@ -36,12 +36,21 @@ pub fn delete_directory(connection: &mut Connection) -> String {
 }
 
 pub fn copy_directory(connection: &mut Connection) -> String {
-    let path = connection.input.path();
-    let new_path = connection.input.string("\nEnter new path: ");
-    let command = format!("cp -r {} {}", path.to_str().unwrap(), new_path.as_str());
+    let source = connection.input.prompt_path("\nEnter source: ");
+    let destination = connection.input.prompt_path("\nEnter destination: ");
+
+    let command = format!(
+        "cp -r {} {}",
+        source.to_str().unwrap(),
+        destination.to_str().unwrap()
+    );
     connection.remote_execute(&command);
-    format!("Copied remote directory from {:?} to {:?}", path, new_path)
-}  
+
+    format!(
+        "Copied remote directory from {:?} to {:?}",
+        source, destination
+    )
+}
 
 pub fn rename_file(connection: &mut Connection) -> String {
     let source = connection.input.prompt_path("\nEnter source: ");

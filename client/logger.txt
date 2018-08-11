@@ -1,0 +1,4 @@
+[2018-08-11][13:42:55] User listed local directories at "/"
+[2018-08-11][13:42:59] User listed remote directories at "/"
+[2018-08-11][13:43:02] Hostname: server:22  Username: root
+

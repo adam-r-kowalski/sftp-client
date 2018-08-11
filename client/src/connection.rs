@@ -1,5 +1,5 @@
 use ssh2::{Session, Sftp};
-use std::fs::OpenOptions;
+use std::fs::{File, OpenOptions};
 use std::io::Read;
 use std::io::Write;
 use std::net::TcpStream;
@@ -13,6 +13,15 @@ pub struct Connection {
     pub input: Box<Input>,
 }
 
+fn open_log_file() -> File {
+    OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create(true)
+        .open("connection.txt")
+        .unwrap()
+}
+
 impl Connection {
     pub fn new(host: &str, username: &str, password: &str, input: Box<Input>) -> Connection {
         let tcp = TcpStream::connect(host).unwrap();
@@ -20,16 +29,12 @@ impl Connection {
         session.handshake(&tcp).unwrap();
         session.userauth_password(username, password).unwrap();
 
-        let mut log = OpenOptions::new()
-            .read(true)
-            .write(true)
-            .create(true)
-            .open("connection.txt")
-            .unwrap();
+        let mut log = open_log_file();
 
         if let Err(e) = writeln!(log, "Hostname: {} Username: {}", host, username) {
             eprintln!("Couldn't write to log: {}", e);
         }
+
         Connection {
             tcp,
             session,
@@ -62,32 +67,25 @@ impl Connection {
     }
 
     pub fn read_log() -> String {
-        let mut log = OpenOptions::new()
-            .read(true)
-            .open("connection.txt")
-            .unwrap();
-
+        let mut log = open_log_file();
         let mut info = String::new();
         log.read_to_string(&mut info).expect("something broke");
-
         info
     }
     pub fn view_connection_info(_connection: &mut Connection) -> String {
-         Connection::read_log()
+        Connection::read_log()
     }
 
-    pub fn use_saved_connection( input: Box<Input>) -> Connection {
-        let contents = Connection::read_log(); 
-        let  chunks: Vec<&str> = contents.split(" ").collect();
+    pub fn use_saved_connection(input: Box<Input>) -> Connection {
+        let contents = Connection::read_log();
+        let chunks: Vec<&str> = contents.split(" ").collect();
         let hostname = chunks[1];
-        let mut  username = chunks[3].to_string();
+        let mut username = chunks[3].to_string();
         username.pop();
-        if '\n' == username.chars().last().unwrap()
-        {
+        if '\n' == username.chars().last().unwrap() {
             username.pop();
         }
-              
-        Connection::new(&hostname, &username, "root", input)
 
+        Connection::new(&hostname, &username, "root", input)
     }
 }

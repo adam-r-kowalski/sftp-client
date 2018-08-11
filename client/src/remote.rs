@@ -35,6 +35,14 @@ pub fn delete_directory(connection: &mut Connection) -> String {
     }
 }
 
+pub fn copy_directory(connection: &mut Connection) -> String {
+    let path = connection.input.path();
+    let new_path = connection.input.string("\nEnter new path: ");
+    let command = format!("cp -r {} {}", path.to_str().unwrap(), new_path.as_str());
+    connection.remote_execute(&command);
+    format!("Copied remote directory from {:?} to {:?}", path, new_path)
+}  
+
 pub fn rename_file(connection: &mut Connection) -> String {
     let source = connection.input.prompt_path("\nEnter source: ");
     let destination = connection.input.prompt_path("\nEnter destination: ");
@@ -67,15 +75,15 @@ pub fn delete_file(connection: &mut Connection) -> String {
     }
 }
 
-pub fn put_file(connection: &mut Connection) -> String {
-    let source = connection.input.prompt_path("\nLocal path to upload: ");
+pub fn upload_file(connection: &mut Connection) -> String {
+    let source = connection.input.path();
 
     match File::open(source) {
         Ok(mut f) => {
             let mut contents = Vec::new();
             f.read_to_end(&mut contents).unwrap();
 
-            let dest = connection.input.prompt_path("\nRemote destination path: ");
+            let dest = connection.input.path();
             /* 
              Map allows you to assume the previous function succeeded and run a
              lambda on the successful case. We handle any error cases with the
@@ -92,11 +100,11 @@ pub fn put_file(connection: &mut Connection) -> String {
     }
 }
 
-pub fn put_file_multi(connection: &mut Connection) -> String {
+pub fn upload_multiple_files(connection: &mut Connection) -> String {
     let mut done = false;
 
     while !done {
-        put_file(connection);
+        upload_file(connection);
         let response = connection.input.string("\nAnother file?(yes or no)");
         done = response == "no";
     }
@@ -117,7 +125,7 @@ pub fn download_file(connection: &mut Connection) -> String {
     }
 }
 
-pub fn download_file_multi(connection: &mut Connection) -> String {
+pub fn download_multiple_files(connection: &mut Connection) -> String {
     let mut done = false;
 
     while !done {
@@ -143,9 +151,4 @@ pub fn change_permission(connection: &mut Connection) -> String {
         "Changed permissions for remote file {:?} to {}",
         path, permissions
     )
-}
-
-pub fn execute(connection: &mut Connection) -> String {
-    let command = connection.input.string("\nEnter command: ");
-    connection.remote_execute(&command)
 }

@@ -27,7 +27,7 @@ impl Connection {
             .open("connection.txt")
             .unwrap();
 
-        if let Err(e) = writeln!(log, "Hostname: {}  Username: {}", host, username) {
+        if let Err(e) = writeln!(log, "Hostname: {} Username: {}", host, username) {
             eprintln!("Couldn't write to log: {}", e);
         }
         Connection {
@@ -61,7 +61,7 @@ impl Connection {
         s
     }
 
-    pub fn read_log(&self) -> String {
+    pub fn read_log() -> String {
         let mut log = OpenOptions::new()
             .read(true)
             .open("connection.txt")
@@ -72,7 +72,22 @@ impl Connection {
 
         info
     }
-    pub fn view_connection_info(connection: &mut Connection) -> String {
-        connection.read_log()
+    pub fn view_connection_info(_connection: &mut Connection) -> String {
+         Connection::read_log()
+    }
+
+    pub fn use_saved_connection( input: Box<Input>) -> Connection {
+        let contents = Connection::read_log(); 
+        let  chunks: Vec<&str> = contents.split(" ").collect();
+        let hostname = chunks[1];
+        let mut  username = chunks[3].to_string();
+        username.pop();
+        if '\n' == username.chars().last().unwrap()
+        {
+            username.pop();
+        }
+              
+        Connection::new(&hostname, &username, "root", input)
+
     }
 }

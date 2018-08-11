@@ -1,6 +1,6 @@
 use connection::Connection;
-use std::fs;
-use std::fs::File;
+use std::fs::{self, File};
+use std::path::Path;
 use std::process::Command;
 use std::str::from_utf8;
 
@@ -27,18 +27,13 @@ pub fn rename_file(connection: &mut Connection) -> String {
 
 pub fn change_permission(connection: &mut Connection) -> String {
     let path = connection.input.path();
-    match File::open(&path) {
-        Ok(file) => {
-            let mut perms = file.metadata().unwrap().permissions();
-            perms.set_readonly(true);
-            file.set_permissions(perms).unwrap();
-            format!("Changed permission for local file {:?} ", path)
-        }
-        Err(e) => e.to_string(),
-    }
+    let permissions = connection.input.string("Enter new permissions in octal format (e.g. 754): ");
+    let command = format!("chmod {} {}", permissions, path.to_str().unwrap());
+    execute_command(&command);
+    format!("Changed permissions for local file {:?} to {}", path, permissions)
 }
-
-fn execute_command(command: &str) -> String {
+ 
+pub fn execute_command(command: &str) -> String {
     let split = command.split(" ").collect::<Vec<_>>();
     let mut command_builder = Command::new(split[0]);
     command_builder.args(split[1..].iter());
@@ -46,9 +41,22 @@ fn execute_command(command: &str) -> String {
     String::from(from_utf8(&output).unwrap())
 }
 
-pub fn execute(connection: &mut Connection) -> String {
-    format!(
-        "{}",
-        execute_command(&connection.input.string("\nEnter command: "))
-    )
+pub fn create_file(connection: &mut Connection) -> String {
+    let path = connection.input.path();
+    match File::create(&path) {
+        Ok(_) => format!("User created local file {:?}", path),
+        Err(e) => e.to_string(),
+    }
+}
+
+pub fn delete_file(connection: &mut Connection) -> String {
+    let path = connection.input.path();
+    match fs::remove_file(&path) {
+        Ok(_) => format!("User deleted local file {:?}", path),
+        Err(e) => e.to_string(),
+    }
+}
+
+pub fn file_exists(_: &mut Connection, path: &Path) -> bool {
+    File::open(&path).is_ok()
 }

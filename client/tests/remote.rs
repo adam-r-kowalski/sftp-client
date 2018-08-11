@@ -4,8 +4,7 @@ use std::path::PathBuf;
 
 use client::connection::Connection;
 use client::input::MockInput;
-use client::remote;
-use std::process::Command;
+use client::{local, remote};
 
 #[test]
 fn create_directory() {
@@ -33,6 +32,27 @@ fn delete_directory() {
     remote::delete_directory(&mut connection);
     assert!(!remote::directory_exists(&mut connection, &path));
 }
+
+#[test]
+fn copy_directory() {
+    let mut input = MockInput::new();
+    let path = PathBuf::from("/demo_directory_3");
+    input.set_path(&path);
+    let new_path = PathBuf::from("/demo_directory_4");
+    input.set_path(&new_path);
+
+    let mut connection = Connection::to_container(Box::new(input));
+    remote::create_directory(&mut connection);
+    
+    let mut input2 = MockInput::new();
+    input2.set_path(&path);    
+    let mut connection2 = Connection::to_container(Box::new(input2));
+    remote::copy_directory(&mut connection);
+    assert!(remote::directory_exists(&mut connection, &new_path));
+    remote::delete_directory(&mut connection2);
+    remote::delete_directory(&mut connection);
+}
+    
 
 #[test]
 fn create_file() {
@@ -107,13 +127,24 @@ fn download_file() {
     let mut connection = Connection::to_container(Box::new(input));
 
     remote::create_file(&mut connection);
+
     remote::download_file(&mut connection);
+    assert!(local::file_exists(&mut connection, &path));
 
-    let status = Command::new("/bin/rm")
-        .arg(&path)
-        .status()
-        .expect("failed to execute process");
+    local::delete_file(&mut connection);
+    remote::delete_file(&mut connection);
+}
 
-    assert!(status.success());
+#[test]
+fn upload_file() {
+    let mut input = MockInput::new();
+    let path = PathBuf::from("/demo_file6.txt");
+    input.set_path(&path);
+
+    let mut connection = Connection::to_container(Box::new(input));
+    local::create_file(&mut connection);
+    remote::upload_file(&mut connection);
+    local::delete_file(&mut connection);
+    assert!(remote::file_exists(&mut connection, &path));
     remote::delete_file(&mut connection);
 }

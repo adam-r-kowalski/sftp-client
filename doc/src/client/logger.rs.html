@@ -35,12 +35,13 @@
 <span id="35">35</span>
 <span id="36">36</span>
 <span id="37">37</span>
+<span id="38">38</span>
 </pre><pre class="rust ">
 <span class="kw">extern</span> <span class="kw">crate</span> <span class="ident">chrono</span>;
 <span class="kw">use</span> <span class="self">self</span>::<span class="ident">chrono</span>::<span class="ident">Local</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fs</span>::{<span class="ident">File</span>, <span class="ident">OpenOptions</span>};
-<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::{<span class="ident">Read</span>, <span class="ident">Write</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>::<span class="ident">Write</span>;
 
 <span class="comment">/*
   Every action will have a corresponding log entry
@@ -58,6 +59,7 @@
             <span class="ident">log_file</span>: <span class="ident">OpenOptions</span>::<span class="ident">new</span>()
                 .<span class="ident">read</span>(<span class="bool-val">true</span>)
                 .<span class="ident">write</span>(<span class="bool-val">true</span>)
+                .<span class="ident">truncate</span>(<span class="bool-val">true</span>)
                 .<span class="ident">create</span>(<span class="bool-val">true</span>)
                 .<span class="ident">open</span>(<span class="string">&quot;logger.txt&quot;</span>)
                 .<span class="ident">unwrap</span>(),

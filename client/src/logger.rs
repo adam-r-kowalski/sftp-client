@@ -2,7 +2,7 @@ extern crate chrono;
 use self::chrono::Local;
 
 use std::fs::{File, OpenOptions};
-use std::io::{Read, Write};
+use std::io::Write;
 
 /*
   Every action will have a corresponding log entry
@@ -20,6 +20,7 @@ impl Logger {
             log_file: OpenOptions::new()
                 .read(true)
                 .write(true)
+                .truncate(true)
                 .create(true)
                 .open("logger.txt")
                 .unwrap(),

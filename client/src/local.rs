@@ -62,6 +62,6 @@ pub fn delete_file(connection: &mut Connection) -> String {
     }
 }
 
-pub fn file_exists(_: &mut Connection, path: &Path) -> bool {
+pub fn file_exists(path: &Path) -> bool {
     File::open(&path).is_ok()
 }

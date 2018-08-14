@@ -126,7 +126,7 @@ fn download_file() {
     remote::create_file(&mut connection);
 
     remote::download_file(&mut connection);
-    assert!(local::file_exists(&mut connection, &path));
+    assert!(local::file_exists(&path));
 
     local::delete_file(&mut connection);
     remote::delete_file(&mut connection);

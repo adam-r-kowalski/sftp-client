@@ -1,5 +1,9 @@
 # sftp-client
 
+## Trello Board
+
+See the current status of project on our trello [here](https://trello.com/b/DlK7YQVJ/agi-410)
+
 ## Setup Docker
 
 Install docker for your desired platform by following the link [here](https://docs.docker.com/install/).
